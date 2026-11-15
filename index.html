@@ -2448,7 +2448,7 @@ var qrcode = function() {
 /* ===== CONFIGURACIÓN =====
    Pega entre las comillas la URL de la aplicación web de Apps Script (termina en /exec).
    Con las comillas vacías la app funciona en modo demostración, sin conexión a la hoja. */
-var API_URL='';
+var API_URL='https://script.google.com/macros/s/AKfycbyRA7dBTHKeQB9V4jpRnV1P4M8J2yfpjI67L9hHuMEsYwmVd1KGQqnWbEAFn3YpTxj8tQ/exec';
 var DEMO=!API_URL;
 var LS={get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem(k);}catch(e){}}};
 var norm=function(s){return String(s===null||s===undefined?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
