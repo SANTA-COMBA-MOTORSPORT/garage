@@ -31,7 +31,7 @@ acceso por móvil y PIN, y Gemini para fotos y búsquedas.
 ### 4. Publicar la app
 1. Abre `index.html`, busca `var API_URL='';` y pega la URL entre las comillas.
 2. Sube `index.html` y `CNAME` al repositorio de GitHub y activa **Pages** en la rama principal.
-3. En Dinahosting crea un registro **CNAME**: `garage` apuntando a `sc-motorsport.github.io`.
+3. En Dinahosting crea un registro **CNAME**: `garage` apuntando a `santa-comba-motorsport.github.io`.
 4. Cuando el dominio responda, marca **Enforce HTTPS** en Pages.
 
 ## Cuando cambies Code.gs
