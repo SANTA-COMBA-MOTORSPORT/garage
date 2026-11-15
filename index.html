@@ -58,7 +58,7 @@ main{max-width:720px;margin:0 auto;padding:14px 16px 120px;display:flex;flex-dir
 .zone{border:1px solid var(--line);background:linear-gradient(180deg,var(--raise),var(--surface));border-radius:var(--r);padding:12px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;align-items:center;text-align:left;min-width:0}
 .zone .mini{height:64px;width:38px;grid-row:1/3}
 .zone strong{align-self:end}
-.zone strong{font:700 20px/1 var(--display);text-transform:uppercase;letter-spacing:.05em}
+.zone strong{font:700 18px/1 var(--display);overflow:hidden;text-overflow:ellipsis;text-transform:uppercase;letter-spacing:.05em}
 .zone span{font-size:12px;color:var(--muted);align-self:start}
 .sect{display:flex;flex-direction:column;gap:10px}
 .secthd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
@@ -70,6 +70,7 @@ h2{font:700 22px/1.1 var(--display);text-transform:uppercase;letter-spacing:.04e
 .lite.low i{background:var(--warn)}.lite.empty i{background:var(--bad)}
 .lite .nm{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lite .q{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:600}
+.start{border-color:var(--accent);background:linear-gradient(160deg,#2a1220,var(--surface) 70%)}
 .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:s}
 .steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start}
 .steps li::before{content:counter(s);flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:700 16px/28px var(--display);text-align:center}
@@ -2583,16 +2584,22 @@ var EV_BANCO={W:.62,H:1.24,stage:'van',blocks:[{x:.03,y:1.14,w:.08,h:.1,d:.08,f:
  {c:'HUECO',n:'Bandeja entre los dos cuerpos',x:.03,y:.405,w:.56,h:.05,k:'open'},
  {c:'C4',n:'Cajón grande del cuerpo inferior',x:.03,y:.47,w:.56,h:.1,k:'drawer',bar:1},{c:'C5',n:'Cajón bajo del cuerpo inferior',x:.03,y:.58,w:.56,h:.07,k:'drawer',bar:1},
  {c:'ARM',n:'Armario de dos puertas',x:.03,y:.665,w:.56,h:.46,k:'door',two:1}]};
-var EV_ARCON={W:1.76,H:.5,stage:'van',blocks:[{x:0,y:0,w:1.76,h:.5,d:.46,f:'#2b2b30'}],cells:[
+var GRIS='#878b92';
+var EV_ARCON={W:1.76,H:.5,stage:'van',front:'#9a9ea5',blocks:[{x:0,y:0,w:1.76,h:.5,d:.46,f:GRIS}],cells:[
  {c:'ENCIMA',l:'ENCIMA',n:'Encima del arcón',k:'face'},{c:'IZQ',l:'CONDUCTOR',n:'Sección del lado del conductor',x:.03,y:.04,w:.84,h:.42,k:'door'},{c:'DER',l:'COPILOTO',n:'Sección del lado del copiloto',x:.89,y:.04,w:.84,h:.42,k:'door'}]};
-var EV_CARGA={W:1.7,H:1.1,stage:'van',blocks:[{x:0,y:1.06,w:1.7,h:.04,d:1.2,f:'#a98a5f'}],cells:[{c:'',l:'',n:'Suelto en la zona de carga',x:.03,y:.1,w:1.64,h:.95,k:'air'}]};
-FURN.push({id:'SPR-ARC',floor:'van',zone:'Sprinter',name:'Arcón transversal',cx:1,cy:2.3,w:1.76,h:.46,rot:0,lab:null,pc:'#2b2b30',ev:EV_ARCON},
+var RAMPA='#9aa0a6';
+var EV_CARGA={W:1.7,H:1,stage:'van',blocks:[{x:0,y:.97,w:1.7,h:.03,d:1.4,f:'#5d6875'},{x:0,y:.72,w:.5,h:.05,d:1.4,f:RAMPA},{x:1.2,y:.72,w:.5,h:.05,d:1.4,f:RAMPA}],cells:[
+ {c:'RAMPAS',l:'CARCROSS',n:'Sobre las rampas, donde va el carcross',x:.03,y:.06,w:1.64,h:.63,k:'air'},
+ {c:'BAJO-IZQ',l:'IZQ',n:'Bajo la rampa del lado del conductor',x:.02,y:.79,w:.46,h:.17,k:'air'},
+ {c:'CENTRO',l:'CENTRO',n:'Suelo central, entre las rampas',x:.54,y:.79,w:.62,h:.17,k:'air'},
+ {c:'BAJO-DER',l:'DER',n:'Bajo la rampa del lado del copiloto',x:1.22,y:.79,w:.46,h:.17,k:'air'}]};
+FURN.push({id:'SPR-ARC',floor:'van',zone:'Sprinter',name:'Arcón transversal',cx:1,cy:2.3,w:1.76,h:.46,rot:0,lab:null,pc:GRIS,ev:EV_ARCON},
  {id:'SPR-BAN',floor:'van',zone:'Sprinter',name:'Banco de herramientas',cx:.3,cy:3.35,w:.33,h:.62,rot:0,lab:[.52,3.4,'start'],pc:'#141416',ev:EV_BANCO},
  {id:'SPR-CAR',floor:'van',zone:'Sprinter',name:'Carro de herramientas',cx:1.5,cy:3.65,w:.68,h:.46,rot:0,lab:null,pc:'#141416',ev:EV_CARRO},
- {id:'SPR-CARGA',floor:'van',zone:'Sprinter',name:'Zona de carga',cx:1,cy:4.95,w:1.66,h:1.5,rot:0,lab:null,pc:'rgba(255,255,255,.12)',ev:EV_CARGA});
+ {id:'SPR-CARGA',floor:'van',zone:'Sprinter',name:'Zona de carga y rampas',cx:1,cy:4.88,w:1.66,h:1.75,rot:0,lab:null,pc:'url(#pr)',ev:EV_CARGA});
 var VAN={id:'SPR-VAN',name:'Sprinter',cx:7.8,cy:10.7,w:2,h:5.93,rot:180};
 FURN.forEach(function(f){f.subs=f.ev.cells.map(function(c){return {c:c.c,n:c.n};});});
-var SN={'SPR-ARC':'Arcón','SPR-BAN':'Banco','SPR-CAR':'Carro','SPR-CARGA':'Zona de carga','TAL-ARM':'Armario','TAL-EST1':'Estantería grande','TAL-EST2':'Estantería pequeña','LIV-APA1':'Aparador 1','LIV-APA2':'Aparador 2','LIV-APA3':'Aparador 3','LIV-COC':'Cocina','LIV-BAN':'Baño','LIV-TV':'Mueble TV'};
+var SN={'SPR-ARC':'Arcón','SPR-BAN':'Banco','SPR-CAR':'Carro','SPR-CARGA':'Carcross y rampas','TAL-ARM':'Armario','TAL-EST1':'Estantería grande','TAL-EST2':'Estantería pequeña','LIV-APA1':'Aparador 1','LIV-APA2':'Aparador 2','LIV-APA3':'Aparador 3','LIV-COC':'Cocina','LIV-BAN':'Baño','LIV-TV':'Mueble TV'};
 FURN.forEach(function(f){f.sn=SN[f.id]||f.id.split('-').pop();});
 function evOf(id){var f=furnById(id);return f?f.ev:EV_PAL;}
 function fullCode(id,c){return c.c?id+'-'+c.c:id;}
@@ -2727,6 +2734,7 @@ var LIVING='.15,9.46 5.67,9.46 5.67,19.46 2.18,19.46 2.18,16.27 1.34,16.27 1.34,
 var DEFS='<defs><pattern id="pw" width="1.2" height=".24" patternUnits="userSpaceOnUse"><rect width="1.2" height=".24" fill="#a8672f"/><path d="M0 .24H1.2M.5 0V.24" stroke="#8a5223" stroke-width=".025"/></pattern>'+
  '<pattern id="pt" width=".3" height=".3" patternUnits="userSpaceOnUse"><rect width=".3" height=".3" fill="#2f8a3d"/><circle cx=".07" cy=".08" r=".035" fill="#277536"/><circle cx=".21" cy=".2" r=".035" fill="#3a9c49"/></pattern>'+
  '<pattern id="pc" width=".9" height=".9" patternUnits="userSpaceOnUse"><rect width=".9" height=".9" fill="#5a585f"/><circle cx=".2" cy=".3" r=".05" fill="#615f67"/><circle cx=".65" cy=".7" r=".04" fill="#54525a"/></pattern>'+
+ '<pattern id="pr" width=".16" height=".12" patternUnits="userSpaceOnUse"><rect width=".16" height=".12" fill="#9aa0a6"/><rect x=".03" y=".045" width=".1" height=".03" rx=".012" fill="#5f656c"/></pattern>'+
  '<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx=".06" dy=".09" stdDeviation=".07" flood-color="#000" flood-opacity=".55"/></filter></defs>';
 function shape(id,cls,cx,cy,w,h,rot,fill,inLabel,slats){
  var x=cx-w/2,y=cy-h/2,s='<g class="furn '+cls+(ui.sel===id?' sel':'')+'" data-loc="'+id+'" transform="rotate('+rot+' '+cx+' '+cy+')" filter="url(#sh)">'+
@@ -2741,13 +2749,13 @@ function badge(x,y,n){var k=planVB()[2],r=k*.026;return '<g class="bd"><circle c
 function vanBody(){
  return '<path d="M.3 .12Q1 -.1 1.7 .12L1.94 .55L2 1.05V5.72Q2 5.93 1.8 5.93H.2Q0 5.93 0 5.72V1.05L.06 .55Z" fill="#e4e4e9" stroke="#fff" stroke-width=".05" stroke-linejoin="round"/>'+
   '<path d="M.26 .8H1.74L1.62 1.38H.38Z" fill="#17171c"/><rect x="-.2" y=".95" width=".2" height=".14" rx=".04" fill="#cfcfd6"/><rect x="2" y=".95" width=".2" height=".14" rx=".04" fill="#cfcfd6"/>'+
-  '<rect x=".1" y="1.98" width="1.8" height="3.86" rx=".06" fill="#a98a5f" stroke="#7d6540" stroke-width=".03"/><path d="M.1 1.98H1.9" stroke="#55555c" stroke-width=".07"/>'+
+  '<rect x=".1" y="1.98" width="1.8" height="3.86" rx=".06" fill="#5d6875" stroke="#444d58" stroke-width=".03"/><path d="M.1 1.98H1.9" stroke="#55555c" stroke-width=".07"/>'+
   '<path d="M1.97 2.05V3.25" stroke="#ff2e9a" stroke-width=".06" stroke-linecap="round"/><path d="M1 5.93V5.8" stroke="#9a9aa2" stroke-width=".04"/>';
 }
 function planSVG(){
  var s=DEFS;
  if(ui.floor==='van'){
-  s+=vanBody();for(var v=1;v<8;v++)s+='<line x1="'+(.1+v*.225)+'" y1="2.02" x2="'+(.1+v*.225)+'" y2="5.82" stroke="#8d7450" stroke-width=".012"/>';
+  s+=vanBody();for(var v=1;v<8;v++)s+='<line x1="'+(.1+v*.225)+'" y1="2.02" x2="'+(.1+v*.225)+'" y2="5.82" stroke="#525c68" stroke-width=".012"/>';
   s+='<text class="fl" x="1" y="1.72" text-anchor="middle">Cabina</text><text class="fl" x="1.86" y="2.85" text-anchor="end">Puerta lateral</text><text class="fl" x="1" y="6.2" text-anchor="middle">Portón trasero</text>';
  }else if(ui.floor==='main'){
   s+='<polygon class="wall" points="'+OUT_MAIN+'" fill="url(#pc)"/><polygon points="'+LIVING+'" fill="url(#pw)"/><polygon class="wall2" points="'+OUT_MAIN+'"/>';
@@ -2782,7 +2790,7 @@ function stageSVG(id){
  var ev=evOf(id),W=ev.W,H=ev.H,maxd=Math.max.apply(null,ev.blocks.map(function(b){return b.d;}));
  var m=Math.max(.14,W*.07),fl=ev.float||0,ox=m,oy=m+maxd*.35,floorY=oy+H+fl,hor=floorY-maxd*.35-.01;
  var vw=W+maxd*.5+2*m,vh=floorY+Math.max(.1,W*.08),fs=W/22,sw=W*.005,s='';
- var wall={foso:'#55535a',van:'#c9cad0'}[ev.stage]||'#eceaee',floor={taller:'#8d8b91',living:'#b0703a',van:'#a98a5f'}[ev.stage]||'#3a9447';
+ var wall={foso:'#55535a',van:'#74839a'}[ev.stage]||'#eceaee',floor={taller:'#8d8b91',living:'#b0703a',van:'#5d6875'}[ev.stage]||'#3a9447';
  s+='<rect x="-30" y="-30" width="'+(vw+60)+'" height="'+(vh+60)+'" fill="'+wall+'"/>';
  if(ev.stage==='taller'&&hor-.7>0)s+='<rect x="-30" y="'+(hor-.62)+'" width="'+(vw+60)+'" height=".62" fill="#2a292e"/><rect x="-30" y="'+(hor-.7)+'" width="'+(vw+60)+'" height=".08" fill="#ff2e9a"/>';
  s+='<rect x="-30" y="'+hor+'" width="'+(vw+60)+'" height="'+(vh-hor+30)+'" fill="'+floor+'"/>';
@@ -2847,7 +2855,7 @@ function viewInicio(){
  h+='<div class="stats"><button class="stat" data-act="stat" data-f="all"><b>'+n+'</b><span>Artículos</span></button><button class="stat warn" data-act="stat" data-f="buy"><b>'+buy.length+'</b><span>Por reponer</span></button><button class="stat mute" data-act="stat" data-f="noloc"><b>'+noloc+'</b><span>Sin ubicar</span></button></div>';
  h+='<div class="sect"><h2>¿Dónde buscas?</h2><div class="zones">'+ZONES.map(function(z){var f=FURN.filter(function(x){return x.zone===z[1];}).length;return '<button class="zone" data-act="zone" data-z="'+z[0]+'">'+miniMap(z[0])+'<strong>'+z[1]+'</strong><span>'+zc[z[1]]+' artículo'+(zc[z[1]]===1?'':'s')+'</span></button>';}).join('')+'</div></div>';
  h+=kitsHomeHTML();
- if(!n)h+='<div class="panel"><h2>Empieza por aquí</h2><ol class="steps"><li><span>Abre el plano y toca un mueble para verlo en 3D.</span></li><li><span>Toca un hueco y pulsa «Añadir artículo aquí», o usa el botón rosa para añadir con una foto.</span></li><li><span>Imprime las etiquetas QR desde «Sitios» y pégalas en cada hueco.</span></li></ol></div>';
+ if(!n)h+='<div class="panel start"><h2>El garaje está por estrenar</h2><p class="empty-msg">Haz una foto a la primera bandeja de herramientas y Gemini la inventaría por ti, o abre un mueble en el plano y ve metiendo cosas.</p><div class="row"><button class="btn pri" data-act="ai">Añadir con foto</button><button class="btn" data-act="zone" data-z="taller">Abrir el plano</button></div></div>';
  if(buy.length)h+='<div class="sect"><div class="secthd"><h2>Por reponer</h2><button class="link" data-act="stat" data-f="buy">Ver lista de la compra</button></div><div class="lites">'+buy.slice(0,4).map(liteRow).join('')+'</div></div>';
  if(n)h+='<div class="sect"><div class="secthd"><h2>Lo último añadido</h2><button class="link" data-act="stat" data-f="all">Ver todo</button></div><div class="lites">'+state.items.slice(0,4).map(liteRow).join('')+'</div></div>';
  return h;
