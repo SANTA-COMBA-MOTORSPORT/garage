@@ -6,16 +6,17 @@
  * 4) Implementar > Nueva implementación > Aplicación web (Ejecutar como: yo; Acceso: cualquier usuario).
  */
 var TABS = {
-  Articulos: ['id', 'nombre', 'cantidad', 'estado', 'ubicacion', 'etiquetas', 'categoria', 'minimo', 'notas', 'precio', 'proveedor', 'fecha_compra', 'foto', 'creado', 'modificado', 'por'],
+  Articulos: ['id', 'nombre', 'cantidad', 'estado', 'ubicacion', 'etiquetas', 'categoria', 'minimo', 'notas', 'precio', 'proveedor', 'fecha_compra', 'foto', 'creado', 'modificado', 'por', 'vehiculo', 'fuera', 'fuera_desde'],
   Cajas: ['id', 'tipo', 'ubicacion'],
   Palets: ['id', 'x', 'y', 'rot'],
   Posiciones: ['id', 'x', 'y', 'rot'],
   Usuarios: ['movil', 'pin', 'nombre', 'rol', 'activo'],
   Movimientos: ['fecha', 'usuario', 'accion', 'detalle'],
   Fotos: ['id', 'data'],
-  Ubicaciones: ['codigo', 'zona', 'mueble', 'hueco']
+  Ubicaciones: ['codigo', 'zona', 'mueble', 'hueco'],
+  Kits: ['id', 'nombre', 'articulos', 'cargados']
 };
-var ITEM_MAP = { name: 'nombre', qty: 'cantidad', st: 'estado', loc: 'ubicacion', tags: 'etiquetas', cat: 'categoria', min: 'minimo', notes: 'notas', price: 'precio', prov: 'proveedor', date: 'fecha_compra' };
+var ITEM_MAP = { name: 'nombre', qty: 'cantidad', st: 'estado', loc: 'ubicacion', tags: 'etiquetas', cat: 'categoria', min: 'minimo', notes: 'notas', price: 'precio', prov: 'proveedor', date: 'fecha_compra', veh: 'vehiculo', out: 'fuera', outd: 'fuera_desde' };
 var ST_ES = { ok: 'hay', low: 'queda poco', empty: 'vacio' };
 var ST_IN = { 'hay': 'ok', 'queda poco': 'low', 'vacio': 'empty' };
 var CATS = ['Herramienta manual', 'Herramienta eléctrica', 'Tornillería', 'Recambios', 'Consumibles', 'Lubricantes y químicos', 'Electricidad', 'Ropa SC', 'Bebidas y comida', 'Menaje', 'Limpieza', 'Varios'];
@@ -87,13 +88,16 @@ function getData_(T) {
   var items = a.rows.map(function (r) {
     return { id: str_(r[0]), name: str_(r[c('nombre')]), qty: num_(r[c('cantidad')]), st: ST_IN[String(r[c('estado')]).toLowerCase()] || 'ok', loc: str_(r[c('ubicacion')]),
       tags: str_(r[c('etiquetas')]), cat: str_(r[c('categoria')]), min: num_(r[c('minimo')]), notes: str_(r[c('notas')]), price: str_(r[c('precio')]),
-      prov: str_(r[c('proveedor')]), date: str_(r[c('fecha_compra')]), foto: str_(r[c('foto')]) ? 1 : 0 };
+      prov: str_(r[c('proveedor')]), date: str_(r[c('fecha_compra')]), foto: str_(r[c('foto')]) ? 1 : 0,
+      veh: str_(r[c('vehiculo')]), out: str_(r[c('fuera')]), outd: str_(r[c('fuera_desde')]) };
   }).filter(function (i) { return i.id; });
   var cajas = T('Cajas').rows.map(function (r) { return { id: str_(r[0]), t: str_(r[1]), loc: str_(r[2]) }; }).filter(function (x) { return x.id; });
   var pallets = T('Palets').rows.map(function (r) { return { id: str_(r[0]), x: num_(r[1]), y: num_(r[2]), rot: num_(r[3]) }; }).filter(function (x) { return x.id; });
   var pos = {};
   T('Posiciones').rows.forEach(function (r) { if (str_(r[0])) pos[str_(r[0])] = { x: num_(r[1]), y: num_(r[2]), rot: num_(r[3]) }; });
-  return { items: items, cajas: cajas, pallets: pallets, pos: pos };
+  var ids_ = function (v) { return str_(v).split(',').map(function (x) { return x.trim(); }).filter(function (x) { return x; }); };
+  var kits = T('Kits').rows.map(function (r) { return { id: str_(r[0]), name: str_(r[1]), items: ids_(r[2]), done: ids_(r[3]) }; }).filter(function (x) { return x.id; });
+  return { items: items, cajas: cajas, pallets: pallets, pos: pos, kits: kits };
 }
 
 /* ---------- escritura ---------- */
@@ -143,6 +147,15 @@ function applyOp_(o, T, u) {
       var a = T('Articulos'), lc = a.col('ubicacion');
       a.rows.forEach(function (row) { if (str_(row[lc]) === String(o.id)) { row[lc] = ''; a.dirty = true; } });
       return 'Quitado palet ' + o.id;
+    case 'kitSet':
+      t = T('Kits'); if (!o.id) return null; i = t.find(o.id);
+      r = [String(o.id), str_(o.name).slice(0, 120), (o.items || []).map(String).join(','), (o.done || []).map(String).join(',')];
+      if (i < 0) t.rows.push(r); else t.rows[i] = r;
+      t.dirty = true; return 'Kit ' + str_(o.name) + ': ' + (o.done || []).length + ' de ' + (o.items || []).length + ' cargados';
+    case 'kitDel':
+      if (!admin) return null;
+      t = T('Kits'); i = t.find(o.id); if (i < 0) return null;
+      var kn = str_(t.rows[i][1]); t.rows.splice(i, 1); t.dirty = true; return 'Borrado kit ' + kn;
     case 'posDel':
       if (!admin) return null;
       t = T('Posiciones'); i = t.find(o.id); if (i < 0) return null;
@@ -161,7 +174,7 @@ function ops_(u, ops) {
     (ops || []).forEach(function (o) {
       try { var d = applyOp_(o, T, u); if (d) logs.push([now_(), u.nombre, o.t, d]); } catch (e) { logs.push([now_(), u.nombre, 'ERROR ' + o.t, String(e.message || e)]); }
     });
-    ['Articulos', 'Cajas', 'Palets', 'Posiciones', 'Fotos'].forEach(function (n) { T(n).save(); });
+    ['Articulos', 'Cajas', 'Palets', 'Posiciones', 'Fotos', 'Kits'].forEach(function (n) { T(n).save(); });
     if (logs.length) { var m = ss_().getSheetByName('Movimientos'); m.getRange(m.getLastRow() + 1, 1, logs.length, 4).setValues(logs); }
     return { ok: true, data: getData_(T) };
   });
@@ -228,7 +241,8 @@ function cleanItems_(arr) {
   if (!Array.isArray(arr)) arr = arr && Array.isArray(arr.articulos) ? arr.articulos : [];
   return arr.slice(0, 60).map(function (x) {
     return { name: str_(x.nombre).slice(0, 200), qty: Math.max(1, Math.round(num_(x.cantidad)) || 1), tags: str_(x.etiquetas).slice(0, 300),
-      cat: CATS.indexOf(str_(x.categoria)) >= 0 ? str_(x.categoria) : 'Varios', price: str_(x.precio), prov: str_(x.proveedor), date: str_(x.fecha), dudoso: x.seguro === false ? 1 : 0 };
+      cat: CATS.indexOf(str_(x.categoria)) >= 0 ? str_(x.categoria) : 'Varios', price: str_(x.precio), prov: str_(x.proveedor), date: str_(x.fecha), dudoso: x.seguro === false ? 1 : 0,
+      box: Array.isArray(x.caja) && x.caja.length === 4 && x.caja.every(function (n) { return isFinite(Number(n)); }) ? x.caja.map(function (n) { return Math.max(0, Math.min(1000, Number(n))); }) : null };
   }).filter(function (x) { return x.name; });
 }
 function aiFoto_(req) {
@@ -240,7 +254,8 @@ function aiFoto_(req) {
     ? 'Esta imagen es un ticket, factura o captura de un pedido. Extrae cada producto comprado. Añade además "precio" (número, precio unitario en euros), "proveedor" (tienda) y "fecha" (AAAA-MM-DD) si aparecen. No inventes datos que no se lean. ' + base
     : 'Eres un experto en herramientas y material de taller mecánico de competición. Identifica cada herramienta u objeto distinto que se vea en la foto, uno por uno, sin agrupar herramientas diferentes. ' +
       'Nombre concreto en español (por ejemplo "Llave combinada 13 mm", "Alicate de corte diagonal"). Pon la medida o la marca SOLO si se lee claramente en la foto; si no se lee, no la inventes y pon "seguro": false. ' +
-      'Si hay varias unidades idénticas, una sola entrada con su cantidad. ' + base;
+      'Si hay varias unidades idénticas, una sola entrada con su cantidad. ' +
+      'Añade a cada elemento "caja": [ymin, xmin, ymax, xmax], el recuadro que ocupa en la foto en escala de 0 a 1000 (si hay varias unidades, el de una sola). ' + base;
   return { ok: true, items: cleanItems_(gemini_([{ text: prompt }, { inline_data: { mime_type: m[1], data: m[2] } }])) };
 }
 function aiTags_(req) {
@@ -263,7 +278,20 @@ function aiDonde_(req) {
 }
 
 /* ---------- entrada web ---------- */
+function prepararHojas_() {
+  var p = props_(); if (p.getProperty('ESQUEMA') === '2') return;
+  var ss = ss_();
+  Object.keys(TABS).forEach(function (name) {
+    var sh = ss.getSheetByName(name) || ss.insertSheet(name), cols = TABS[name];
+    if (sh.getMaxColumns() < cols.length) sh.insertColumnsAfter(sh.getMaxColumns(), cols.length - sh.getMaxColumns());
+    sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold').setBackground('#111013').setFontColor('#ff2e9a');
+    sh.setFrozenRows(1);
+    sh.getRange(2, 1, Math.max(1, sh.getMaxRows() - 1), cols.length).setNumberFormat('@');
+  });
+  p.setProperty('ESQUEMA', '2');
+}
 function route_(req) {
+  prepararHojas_();
   if (req.action === 'login') return login_(req);
   var u = userFromToken_(req.token); if (!u) fail_('La sesión ha caducado. Vuelve a entrar.', 'auth');
   switch (req.action) {
@@ -290,12 +318,7 @@ function doGet() { return ContentService.createTextOutput('Couto Garage Inventar
 /* ---------- instalación y mantenimiento ---------- */
 function instalar() {
   var ss = ss_();
-  Object.keys(TABS).forEach(function (name) {
-    var sh = ss.getSheetByName(name) || ss.insertSheet(name), cols = TABS[name];
-    sh.getRange(1, 1, 1, cols.length).setValues([cols]).setFontWeight('bold').setBackground('#111013').setFontColor('#ff2e9a');
-    sh.setFrozenRows(1);
-    sh.getRange(2, 1, Math.max(1, sh.getMaxRows() - 1), cols.length).setNumberFormat('@');
-  });
+  props_().deleteProperty('ESQUEMA'); prepararHojas_();
   var pal = ss.getSheetByName('Palets');
   if (pal.getLastRow() < 2) {
     var P = [[5.67, 3.28, -24], [6.75, 2.75, -24], [7.85, 2.2, -24], [1.75, 6.3, 90], [1.85, 7.35, 0], [3, 6.2, 0], [4.3, 6.2, 0], [5.75, 5.15, 0], [5.75, 6.2, 0], [2.35, 10.3, 90], [2.35, 11.6, 90], [3.05, 13.35, 0], [4.4, 13.35, 0], [6.65, 10.1, 90], [6.65, 11.45, 90], [6.65, 12.8, 90], [9.1, 10.3, 90], [9.1, 11.55, 90], [9.1, 12.8, 90]];
