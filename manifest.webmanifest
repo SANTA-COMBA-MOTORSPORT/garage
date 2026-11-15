@@ -1,0 +1,17 @@
+{
+  "name": "Couto Garage Inventario",
+  "short_name": "Couto Garage",
+  "description": "Inventario del Couto Garage: qué hay y dónde está.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0e0d10",
+  "theme_color": "#0e0d10",
+  "lang": "es",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
