@@ -1,5 +1,5 @@
 /* Couto Garage: guarda la app en el móvil para que abra sin cobertura. Los datos van aparte. */
-const CACHE = 'couto-garage-v3';
+const CACHE = 'couto-garage-v4';
 const SHELL = ['./', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
