@@ -1,0 +1,3141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Couto Garage Inventario</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Plan: el propio garaje como mundo visual. Negro, blanco y franja magenta; el plano con los suelos reales y cada mueble en 3D sobre su pared. Tema oscuro único, a propósito. */
+:root{
+  color-scheme:dark;
+  --bg:#111013; --surface:#1b191f; --raise:#27242c; --ink:#f4f1f6; --muted:#a8a1ae; --line:#38333e;
+  --accent:#ff2e9a; --accent-ink:#1a0610;
+  --ok:#4cc27f; --warn:#f0a23a; --bad:#ff6b6b;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.4 var(--body)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{position:sticky;top:0;z-index:5;background:#0b0a0d;border-bottom:4px solid var(--accent);padding:10px 16px 0}
+.top{display:flex;gap:12px;align-items:center;max-width:720px;margin:0 auto}
+h1{font:700 27px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;margin:0;white-space:nowrap}
+h1 span{color:var(--accent)}
+#q{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+nav{display:flex;gap:4px;max-width:720px;margin:8px auto 0}
+nav button{flex:1;border:0;background:none;padding:9px 4px;font:600 17px var(--display);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:3px solid transparent}
+nav button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+main{max-width:720px;margin:0 auto;padding:14px 16px 60px;display:flex;flex-direction:column;gap:14px}
+.note{font-size:14px;color:var(--muted);border-left:3px solid var(--accent);padding:2px 0 2px 10px;margin:0}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button,.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:14px;font-weight:500;white-space:nowrap}
+.seg button[aria-pressed="true"],.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.chip small{opacity:.75;margin-left:5px}
+.scrollx{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.planwrap{background:linear-gradient(180deg,#201d25,#16141a);border:1px solid var(--line);border-radius:14px;padding:10px}
+svg#plan{display:block;width:100%;max-width:470px;margin:0 auto;height:auto;user-select:none;-webkit-user-select:none}
+svg#plan.edit{touch-action:none}
+.wall{stroke:#f1eef3;stroke-width:.17;stroke-linejoin:round}
+.wall2{fill:none;stroke:var(--accent);stroke-width:.05;stroke-linejoin:round}
+.inwall{stroke:#f1eef3;stroke-width:.13;fill:none}
+.stairs{fill:rgba(0,0,0,.28);stroke:#f1eef3;stroke-width:.03}
+.zl{font:700 .62px var(--display);fill:#fff;letter-spacing:.08em;text-anchor:middle;opacity:.38;pointer-events:none}
+.fl{font:600 .29px var(--body);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.75);stroke-width:.07;pointer-events:none}
+.fl.in{text-anchor:middle;stroke-width:.05}
+.hit{fill:transparent}
+.furn{cursor:pointer}
+.furn.sel .body{stroke:var(--accent);stroke-width:.1}
+@media (prefers-reduced-motion: no-preference){.furn.sel .body{animation:pulse 1s ease-in-out 3}}
+@keyframes pulse{50%{stroke-opacity:.2}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+h2{font:700 22px/1.1 var(--display);text-transform:uppercase;letter-spacing:.04em;margin:0;text-wrap:balance}
+.code{font:600 13px ui-monospace,Menlo,Consolas,monospace;background:var(--raise);border:1px solid var(--line);border-radius:5px;padding:1px 6px;white-space:nowrap}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--muted);background:transparent;border-radius:8px;padding:8px 13px;font-weight:600;font-size:14px}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.sm{padding:5px 10px}
+ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.item{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+#sheet .item{background:var(--raise)}
+.item.low{border-left-color:var(--warn)} .item.empty{border-left-color:var(--bad)}
+.item .nm{font-weight:600;overflow-wrap:anywhere}
+.item .where{font-size:13px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:3px}
+.item .where button{border:0;padding:0;background:none}
+.item .where button .code{border-color:var(--accent);color:var(--accent)}
+.ej{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px dashed var(--muted);border-radius:4px;padding:0 5px;margin-left:6px}
+.qty{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.qty button{border:0;background:var(--raise);width:34px;height:34px;font-size:18px;font-weight:600}
+.qty span{min-width:38px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}
+.pill{border:0;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:#10130f;background:var(--ok)}
+.pill.low{background:var(--warn)} .pill.empty{background:var(--bad)}
+form.add{display:grid;gap:10px;grid-template-columns:1fr 90px}
+form.add label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted)}
+form.add .w{grid-column:1/-1}
+input[type=text],input[type=number],select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--raise);width:100%;min-width:0}
+details.panel summary{font:700 19px var(--display);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.sect{display:flex;flex-direction:column;gap:10px}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.fcard .hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;justify-content:space-between}
+.subs{display:flex;gap:5px;flex-wrap:wrap}
+.cajas{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}
+.cajas span{font-size:13px;color:var(--muted)}
+.empty-msg{color:var(--muted);font-size:14px;margin:0}
+/* Vista 3D del mueble */
+#sheet{position:fixed;inset:0;z-index:20}
+#sheet[hidden]{display:none}
+.backdrop{position:absolute;inset:0;background:rgba(5,4,7,.72)}
+.card{position:absolute;left:8px;right:8px;top:44px;bottom:0;max-width:640px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:14px 14px 0 0;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:14px}
+.card .hd{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.card .x{border:1px solid var(--line);background:var(--raise);border-radius:999px;width:38px;height:38px;font-size:18px;flex:none}
+.stage{display:block;width:100%;max-height:44vh;border-radius:10px;background:#000}
+.cell{cursor:pointer}
+.cell .ov{fill:transparent;stroke:transparent}
+.cell.on .ov{fill:rgba(255,46,154,.3);stroke:var(--accent)}
+.cl{font-family:var(--body);font-weight:600;text-anchor:middle;pointer-events:none}
+@media (prefers-reduced-motion: no-preference){
+  .card.anim{animation:zoom .42s cubic-bezier(.2,.9,.25,1)}
+  .card.anim .cell{animation:cin .45s both}
+  .card.anim .bx{animation:drop .5s cubic-bezier(.2,.9,.25,1) both}
+}
+@keyframes zoom{from{transform:scale(.1);opacity:0}}
+@keyframes cin{from{opacity:0}}
+@keyframes drop{from{opacity:0;transform:translateY(-.25px)}}
+.status{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}.dot.pend{background:var(--warn)}.dot.off{background:var(--muted)}
+.link{border:0;background:none;color:var(--ink);text-decoration:underline;padding:0;font-size:13px}
+.login{max-width:380px;width:100%;margin:6vh auto 0}
+.it-top{display:flex;gap:10px;align-items:flex-start}
+.thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--raise);flex:none}
+.foto-big{max-width:100%;max-height:220px;border-radius:10px;align-self:flex-start;background:var(--raise);min-height:60px;min-width:60px}
+textarea{font:inherit;color:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--raise);width:100%;resize:vertical}
+input[type=password],input[type=file]{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--raise);width:100%;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label.f{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted);min-width:0}
+label.f.w{grid-column:1/-1}
+.rev{display:grid;grid-template-columns:auto 1fr 64px;gap:8px;align-items:center}
+.rev input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+[hidden]{display:none!important}
+#print{display:none}
+@media print{
+ html,body{background:#fff!important;color:#000}
+ header,main,#sheet{display:none!important}
+ #print{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;padding:6mm}
+ .lab{border:1px dashed #888;padding:3mm;display:flex;gap:3mm;align-items:center;break-inside:avoid;color:#000;min-width:0}
+ .lab svg{width:22mm;height:22mm;flex:none}
+ .lab b{font:700 11pt ui-monospace,Menlo,Consolas,monospace;display:block;overflow-wrap:anywhere}
+ .lab span{font:8pt Arial,sans-serif}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Couto <span>Garage</span></h1>
+    <input id="q" type="text" placeholder="Buscar: aceite, M6, camiseta..." autocomplete="off" aria-label="Buscar artículo">
+  </div>
+  <nav id="tabs"></nav>
+</header>
+<main id="app"></main>
+<div id="sheet" hidden></div>
+<div id="print"></div>
+<script>
+//---------------------------------------------------------------------
+//
+// QR Code Generator for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//  http://www.opensource.org/licenses/mit-license.php
+//
+// The word 'QR Code' is registered trademark of
+// DENSO WAVE INCORPORATED
+//  http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+
+var qrcode = function() {
+
+  //---------------------------------------------------------------------
+  // qrcode
+  //---------------------------------------------------------------------
+
+  /**
+   * qrcode
+   * @param typeNumber 1 to 40
+   * @param errorCorrectionLevel 'L','M','Q','H'
+   */
+  var qrcode = function(typeNumber, errorCorrectionLevel) {
+
+    var PAD0 = 0xEC;
+    var PAD1 = 0x11;
+
+    var _typeNumber = typeNumber;
+    var _errorCorrectionLevel = QRErrorCorrectionLevel[errorCorrectionLevel];
+    var _modules = null;
+    var _moduleCount = 0;
+    var _dataCache = null;
+    var _dataList = [];
+
+    var _this = {};
+
+    var makeImpl = function(test, maskPattern) {
+
+      _moduleCount = _typeNumber * 4 + 17;
+      _modules = function(moduleCount) {
+        var modules = new Array(moduleCount);
+        for (var row = 0; row < moduleCount; row += 1) {
+          modules[row] = new Array(moduleCount);
+          for (var col = 0; col < moduleCount; col += 1) {
+            modules[row][col] = null;
+          }
+        }
+        return modules;
+      }(_moduleCount);
+
+      setupPositionProbePattern(0, 0);
+      setupPositionProbePattern(_moduleCount - 7, 0);
+      setupPositionProbePattern(0, _moduleCount - 7);
+      setupPositionAdjustPattern();
+      setupTimingPattern();
+      setupTypeInfo(test, maskPattern);
+
+      if (_typeNumber >= 7) {
+        setupTypeNumber(test);
+      }
+
+      if (_dataCache == null) {
+        _dataCache = createData(_typeNumber, _errorCorrectionLevel, _dataList);
+      }
+
+      mapData(_dataCache, maskPattern);
+    };
+
+    var setupPositionProbePattern = function(row, col) {
+
+      for (var r = -1; r <= 7; r += 1) {
+
+        if (row + r <= -1 || _moduleCount <= row + r) continue;
+
+        for (var c = -1; c <= 7; c += 1) {
+
+          if (col + c <= -1 || _moduleCount <= col + c) continue;
+
+          if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
+              || (0 <= c && c <= 6 && (r == 0 || r == 6) )
+              || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+            _modules[row + r][col + c] = true;
+          } else {
+            _modules[row + r][col + c] = false;
+          }
+        }
+      }
+    };
+
+    var getBestMaskPattern = function() {
+
+      var minLostPoint = 0;
+      var pattern = 0;
+
+      for (var i = 0; i < 8; i += 1) {
+
+        makeImpl(true, i);
+
+        var lostPoint = QRUtil.getLostPoint(_this);
+
+        if (i == 0 || minLostPoint > lostPoint) {
+          minLostPoint = lostPoint;
+          pattern = i;
+        }
+      }
+
+      return pattern;
+    };
+
+    var setupTimingPattern = function() {
+
+      for (var r = 8; r < _moduleCount - 8; r += 1) {
+        if (_modules[r][6] != null) {
+          continue;
+        }
+        _modules[r][6] = (r % 2 == 0);
+      }
+
+      for (var c = 8; c < _moduleCount - 8; c += 1) {
+        if (_modules[6][c] != null) {
+          continue;
+        }
+        _modules[6][c] = (c % 2 == 0);
+      }
+    };
+
+    var setupPositionAdjustPattern = function() {
+
+      var pos = QRUtil.getPatternPosition(_typeNumber);
+
+      for (var i = 0; i < pos.length; i += 1) {
+
+        for (var j = 0; j < pos.length; j += 1) {
+
+          var row = pos[i];
+          var col = pos[j];
+
+          if (_modules[row][col] != null) {
+            continue;
+          }
+
+          for (var r = -2; r <= 2; r += 1) {
+
+            for (var c = -2; c <= 2; c += 1) {
+
+              if (r == -2 || r == 2 || c == -2 || c == 2
+                  || (r == 0 && c == 0) ) {
+                _modules[row + r][col + c] = true;
+              } else {
+                _modules[row + r][col + c] = false;
+              }
+            }
+          }
+        }
+      }
+    };
+
+    var setupTypeNumber = function(test) {
+
+      var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
+      }
+
+      for (var i = 0; i < 18; i += 1) {
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+        _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+      }
+    };
+
+    var setupTypeInfo = function(test, maskPattern) {
+
+      var data = (_errorCorrectionLevel << 3) | maskPattern;
+      var bits = QRUtil.getBCHTypeInfo(data);
+
+      // vertical
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 6) {
+          _modules[i][8] = mod;
+        } else if (i < 8) {
+          _modules[i + 1][8] = mod;
+        } else {
+          _modules[_moduleCount - 15 + i][8] = mod;
+        }
+      }
+
+      // horizontal
+      for (var i = 0; i < 15; i += 1) {
+
+        var mod = (!test && ( (bits >> i) & 1) == 1);
+
+        if (i < 8) {
+          _modules[8][_moduleCount - i - 1] = mod;
+        } else if (i < 9) {
+          _modules[8][15 - i - 1 + 1] = mod;
+        } else {
+          _modules[8][15 - i - 1] = mod;
+        }
+      }
+
+      // fixed module
+      _modules[_moduleCount - 8][8] = (!test);
+    };
+
+    var mapData = function(data, maskPattern) {
+
+      var inc = -1;
+      var row = _moduleCount - 1;
+      var bitIndex = 7;
+      var byteIndex = 0;
+      var maskFunc = QRUtil.getMaskFunction(maskPattern);
+
+      for (var col = _moduleCount - 1; col > 0; col -= 2) {
+
+        if (col == 6) col -= 1;
+
+        while (true) {
+
+          for (var c = 0; c < 2; c += 1) {
+
+            if (_modules[row][col - c] == null) {
+
+              var dark = false;
+
+              if (byteIndex < data.length) {
+                dark = ( ( (data[byteIndex] >>> bitIndex) & 1) == 1);
+              }
+
+              var mask = maskFunc(row, col - c);
+
+              if (mask) {
+                dark = !dark;
+              }
+
+              _modules[row][col - c] = dark;
+              bitIndex -= 1;
+
+              if (bitIndex == -1) {
+                byteIndex += 1;
+                bitIndex = 7;
+              }
+            }
+          }
+
+          row += inc;
+
+          if (row < 0 || _moduleCount <= row) {
+            row -= inc;
+            inc = -inc;
+            break;
+          }
+        }
+      }
+    };
+
+    var createBytes = function(buffer, rsBlocks) {
+
+      var offset = 0;
+
+      var maxDcCount = 0;
+      var maxEcCount = 0;
+
+      var dcdata = new Array(rsBlocks.length);
+      var ecdata = new Array(rsBlocks.length);
+
+      for (var r = 0; r < rsBlocks.length; r += 1) {
+
+        var dcCount = rsBlocks[r].dataCount;
+        var ecCount = rsBlocks[r].totalCount - dcCount;
+
+        maxDcCount = Math.max(maxDcCount, dcCount);
+        maxEcCount = Math.max(maxEcCount, ecCount);
+
+        dcdata[r] = new Array(dcCount);
+
+        for (var i = 0; i < dcdata[r].length; i += 1) {
+          dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
+        }
+        offset += dcCount;
+
+        var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+        var rawPoly = qrPolynomial(dcdata[r], rsPoly.getLength() - 1);
+
+        var modPoly = rawPoly.mod(rsPoly);
+        ecdata[r] = new Array(rsPoly.getLength() - 1);
+        for (var i = 0; i < ecdata[r].length; i += 1) {
+          var modIndex = i + modPoly.getLength() - ecdata[r].length;
+          ecdata[r][i] = (modIndex >= 0)? modPoly.getAt(modIndex) : 0;
+        }
+      }
+
+      var totalCodeCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalCodeCount += rsBlocks[i].totalCount;
+      }
+
+      var data = new Array(totalCodeCount);
+      var index = 0;
+
+      for (var i = 0; i < maxDcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < dcdata[r].length) {
+            data[index] = dcdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < maxEcCount; i += 1) {
+        for (var r = 0; r < rsBlocks.length; r += 1) {
+          if (i < ecdata[r].length) {
+            data[index] = ecdata[r][i];
+            index += 1;
+          }
+        }
+      }
+
+      return data;
+    };
+
+    var createData = function(typeNumber, errorCorrectionLevel, dataList) {
+
+      var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectionLevel);
+
+      var buffer = qrBitBuffer();
+
+      for (var i = 0; i < dataList.length; i += 1) {
+        var data = dataList[i];
+        buffer.put(data.getMode(), 4);
+        buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+        data.write(buffer);
+      }
+
+      // calc num max data.
+      var totalDataCount = 0;
+      for (var i = 0; i < rsBlocks.length; i += 1) {
+        totalDataCount += rsBlocks[i].dataCount;
+      }
+
+      if (buffer.getLengthInBits() > totalDataCount * 8) {
+        throw 'code length overflow. ('
+          + buffer.getLengthInBits()
+          + '>'
+          + totalDataCount * 8
+          + ')';
+      }
+
+      // end code
+      if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) {
+        buffer.put(0, 4);
+      }
+
+      // padding
+      while (buffer.getLengthInBits() % 8 != 0) {
+        buffer.putBit(false);
+      }
+
+      // padding
+      while (true) {
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD0, 8);
+
+        if (buffer.getLengthInBits() >= totalDataCount * 8) {
+          break;
+        }
+        buffer.put(PAD1, 8);
+      }
+
+      return createBytes(buffer, rsBlocks);
+    };
+
+    _this.addData = function(data, mode) {
+
+      mode = mode || 'Byte';
+
+      var newData = null;
+
+      switch(mode) {
+      case 'Numeric' :
+        newData = qrNumber(data);
+        break;
+      case 'Alphanumeric' :
+        newData = qrAlphaNum(data);
+        break;
+      case 'Byte' :
+        newData = qr8BitByte(data);
+        break;
+      case 'Kanji' :
+        newData = qrKanji(data);
+        break;
+      default :
+        throw 'mode:' + mode;
+      }
+
+      _dataList.push(newData);
+      _dataCache = null;
+    };
+
+    _this.isDark = function(row, col) {
+      if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
+        throw row + ',' + col;
+      }
+      return _modules[row][col];
+    };
+
+    _this.getModuleCount = function() {
+      return _moduleCount;
+    };
+
+    _this.make = function() {
+      if (_typeNumber < 1) {
+        var typeNumber = 1;
+
+        for (; typeNumber < 40; typeNumber++) {
+          var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, _errorCorrectionLevel);
+          var buffer = qrBitBuffer();
+
+          for (var i = 0; i < _dataList.length; i++) {
+            var data = _dataList[i];
+            buffer.put(data.getMode(), 4);
+            buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
+            data.write(buffer);
+          }
+
+          var totalDataCount = 0;
+          for (var i = 0; i < rsBlocks.length; i++) {
+            totalDataCount += rsBlocks[i].dataCount;
+          }
+
+          if (buffer.getLengthInBits() <= totalDataCount * 8) {
+            break;
+          }
+        }
+
+        _typeNumber = typeNumber;
+      }
+
+      makeImpl(false, getBestMaskPattern() );
+    };
+
+    _this.createTableTag = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var qrHtml = '';
+
+      qrHtml += '<table style="';
+      qrHtml += ' border-width: 0px; border-style: none;';
+      qrHtml += ' border-collapse: collapse;';
+      qrHtml += ' padding: 0px; margin: ' + margin + 'px;';
+      qrHtml += '">';
+      qrHtml += '<tbody>';
+
+      for (var r = 0; r < _this.getModuleCount(); r += 1) {
+
+        qrHtml += '<tr>';
+
+        for (var c = 0; c < _this.getModuleCount(); c += 1) {
+          qrHtml += '<td style="';
+          qrHtml += ' border-width: 0px; border-style: none;';
+          qrHtml += ' border-collapse: collapse;';
+          qrHtml += ' padding: 0px; margin: 0px;';
+          qrHtml += ' width: ' + cellSize + 'px;';
+          qrHtml += ' height: ' + cellSize + 'px;';
+          qrHtml += ' background-color: ';
+          qrHtml += _this.isDark(r, c)? '#000000' : '#ffffff';
+          qrHtml += ';';
+          qrHtml += '"/>';
+        }
+
+        qrHtml += '</tr>';
+      }
+
+      qrHtml += '</tbody>';
+      qrHtml += '</table>';
+
+      return qrHtml;
+    };
+
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
+
+      var opts = {};
+      if (typeof arguments[0] == 'object') {
+        // Called by options.
+        opts = arguments[0];
+        // overwrite cellSize and margin.
+        cellSize = opts.cellSize;
+        margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
+      }
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var c, mc, r, mr, qrSvg='', rect;
+
+      rect = 'l' + cellSize + ',0 0,' + cellSize +
+        ' -' + cellSize + ',0 0,-' + cellSize + 'z ';
+
+      qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
+      qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
+      qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
+      qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
+      qrSvg += '<path d="';
+
+      for (r = 0; r < _this.getModuleCount(); r += 1) {
+        mr = r * cellSize + margin;
+        for (c = 0; c < _this.getModuleCount(); c += 1) {
+          if (_this.isDark(r, c) ) {
+            mc = c*cellSize+margin;
+            qrSvg += 'M' + mc + ',' + mr + rect;
+          }
+        }
+      }
+
+      qrSvg += '" stroke="transparent" fill="black"/>';
+      qrSvg += '</svg>';
+
+      return qrSvg;
+    };
+
+    _this.createDataURL = function(cellSize, margin) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      return createDataURL(size, size, function(x, y) {
+        if (min <= x && x < max && min <= y && y < max) {
+          var c = Math.floor( (x - min) / cellSize);
+          var r = Math.floor( (y - min) / cellSize);
+          return _this.isDark(r, c)? 0 : 1;
+        } else {
+          return 1;
+        }
+      } );
+    };
+
+    _this.createImgTag = function(cellSize, margin, alt) {
+
+      cellSize = cellSize || 2;
+      margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+
+      var img = '';
+      img += '<img';
+      img += '\u0020src="';
+      img += _this.createDataURL(cellSize, margin);
+      img += '"';
+      img += '\u0020width="';
+      img += size;
+      img += '"';
+      img += '\u0020height="';
+      img += size;
+      img += '"';
+      if (alt) {
+        img += '\u0020alt="';
+        img += escapeXml(alt);
+        img += '"';
+      }
+      img += '/>';
+
+      return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
+    };
+
+    var _createHalfASCII = function(margin) {
+      var cellSize = 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r1, r2, p;
+
+      var blocks = {
+        '██': '█',
+        '█ ': '▀',
+        ' █': '▄',
+        '  ': ' '
+      };
+
+      var blocksLastLineNoMargin = {
+        '██': '▀',
+        '█ ': '▀',
+        ' █': ' ',
+        '  ': ' '
+      };
+
+      var ascii = '';
+      for (y = 0; y < size; y += 2) {
+        r1 = Math.floor((y - min) / cellSize);
+        r2 = Math.floor((y + 1 - min) / cellSize);
+        for (x = 0; x < size; x += 1) {
+          p = '█';
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r1, Math.floor((x - min) / cellSize))) {
+            p = ' ';
+          }
+
+          if (min <= x && x < max && min <= y+1 && y+1 < max && _this.isDark(r2, Math.floor((x - min) / cellSize))) {
+            p += ' ';
+          }
+          else {
+            p += '█';
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          ascii += (margin < 1 && y+1 >= max) ? blocksLastLineNoMargin[p] : blocks[p];
+        }
+
+        ascii += '\n';
+      }
+
+      if (size % 2 && margin > 0) {
+        return ascii.substring(0, ascii.length - size - 1) + Array(size+1).join('▀');
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.createASCII = function(cellSize, margin) {
+      cellSize = cellSize || 1;
+
+      if (cellSize < 2) {
+        return _createHalfASCII(margin);
+      }
+
+      cellSize -= 1;
+      margin = (typeof margin == 'undefined')? cellSize * 2 : margin;
+
+      var size = _this.getModuleCount() * cellSize + margin * 2;
+      var min = margin;
+      var max = size - margin;
+
+      var y, x, r, p;
+
+      var white = Array(cellSize+1).join('██');
+      var black = Array(cellSize+1).join('  ');
+
+      var ascii = '';
+      var line = '';
+      for (y = 0; y < size; y += 1) {
+        r = Math.floor( (y - min) / cellSize);
+        line = '';
+        for (x = 0; x < size; x += 1) {
+          p = 1;
+
+          if (min <= x && x < max && min <= y && y < max && _this.isDark(r, Math.floor((x - min) / cellSize))) {
+            p = 0;
+          }
+
+          // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+          line += p ? white : black;
+        }
+
+        for (r = 0; r < cellSize; r += 1) {
+          ascii += line + '\n';
+        }
+      }
+
+      return ascii.substring(0, ascii.length-1);
+    };
+
+    _this.renderTo2dContext = function(context, cellSize) {
+      cellSize = cellSize || 2;
+      var length = _this.getModuleCount();
+      for (var row = 0; row < length; row++) {
+        for (var col = 0; col < length; col++) {
+          context.fillStyle = _this.isDark(row, col) ? 'black' : 'white';
+          context.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrcode.stringToBytes
+  //---------------------------------------------------------------------
+
+  qrcode.stringToBytesFuncs = {
+    'default' : function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        bytes.push(c & 0xff);
+      }
+      return bytes;
+    }
+  };
+
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['default'];
+
+  //---------------------------------------------------------------------
+  // qrcode.createStringToBytes
+  //---------------------------------------------------------------------
+
+  /**
+   * @param unicodeData base64 string of byte array.
+   * [16bit Unicode],[16bit Bytes], ...
+   * @param numChars
+   */
+  qrcode.createStringToBytes = function(unicodeData, numChars) {
+
+    // create conversion map.
+
+    var unicodeMap = function() {
+
+      var bin = base64DecodeInputStream(unicodeData);
+      var read = function() {
+        var b = bin.read();
+        if (b == -1) throw 'eof';
+        return b;
+      };
+
+      var count = 0;
+      var unicodeMap = {};
+      while (true) {
+        var b0 = bin.read();
+        if (b0 == -1) break;
+        var b1 = read();
+        var b2 = read();
+        var b3 = read();
+        var k = String.fromCharCode( (b0 << 8) | b1);
+        var v = (b2 << 8) | b3;
+        unicodeMap[k] = v;
+        count += 1;
+      }
+      if (count != numChars) {
+        throw count + ' != ' + numChars;
+      }
+
+      return unicodeMap;
+    }();
+
+    var unknownChar = '?'.charCodeAt(0);
+
+    return function(s) {
+      var bytes = [];
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charCodeAt(i);
+        if (c < 128) {
+          bytes.push(c);
+        } else {
+          var b = unicodeMap[s.charAt(i)];
+          if (typeof b == 'number') {
+            if ( (b & 0xff) == b) {
+              // 1byte
+              bytes.push(b);
+            } else {
+              // 2bytes
+              bytes.push(b >>> 8);
+              bytes.push(b & 0xff);
+            }
+          } else {
+            bytes.push(unknownChar);
+          }
+        }
+      }
+      return bytes;
+    };
+  };
+
+  //---------------------------------------------------------------------
+  // QRMode
+  //---------------------------------------------------------------------
+
+  var QRMode = {
+    MODE_NUMBER :    1 << 0,
+    MODE_ALPHA_NUM : 1 << 1,
+    MODE_8BIT_BYTE : 1 << 2,
+    MODE_KANJI :     1 << 3
+  };
+
+  //---------------------------------------------------------------------
+  // QRErrorCorrectionLevel
+  //---------------------------------------------------------------------
+
+  var QRErrorCorrectionLevel = {
+    L : 1,
+    M : 0,
+    Q : 3,
+    H : 2
+  };
+
+  //---------------------------------------------------------------------
+  // QRMaskPattern
+  //---------------------------------------------------------------------
+
+  var QRMaskPattern = {
+    PATTERN000 : 0,
+    PATTERN001 : 1,
+    PATTERN010 : 2,
+    PATTERN011 : 3,
+    PATTERN100 : 4,
+    PATTERN101 : 5,
+    PATTERN110 : 6,
+    PATTERN111 : 7
+  };
+
+  //---------------------------------------------------------------------
+  // QRUtil
+  //---------------------------------------------------------------------
+
+  var QRUtil = function() {
+
+    var PATTERN_POSITION_TABLE = [
+      [],
+      [6, 18],
+      [6, 22],
+      [6, 26],
+      [6, 30],
+      [6, 34],
+      [6, 22, 38],
+      [6, 24, 42],
+      [6, 26, 46],
+      [6, 28, 50],
+      [6, 30, 54],
+      [6, 32, 58],
+      [6, 34, 62],
+      [6, 26, 46, 66],
+      [6, 26, 48, 70],
+      [6, 26, 50, 74],
+      [6, 30, 54, 78],
+      [6, 30, 56, 82],
+      [6, 30, 58, 86],
+      [6, 34, 62, 90],
+      [6, 28, 50, 72, 94],
+      [6, 26, 50, 74, 98],
+      [6, 30, 54, 78, 102],
+      [6, 28, 54, 80, 106],
+      [6, 32, 58, 84, 110],
+      [6, 30, 58, 86, 114],
+      [6, 34, 62, 90, 118],
+      [6, 26, 50, 74, 98, 122],
+      [6, 30, 54, 78, 102, 126],
+      [6, 26, 52, 78, 104, 130],
+      [6, 30, 56, 82, 108, 134],
+      [6, 34, 60, 86, 112, 138],
+      [6, 30, 58, 86, 114, 142],
+      [6, 34, 62, 90, 118, 146],
+      [6, 30, 54, 78, 102, 126, 150],
+      [6, 24, 50, 76, 102, 128, 154],
+      [6, 28, 54, 80, 106, 132, 158],
+      [6, 32, 58, 84, 110, 136, 162],
+      [6, 26, 54, 82, 110, 138, 166],
+      [6, 30, 58, 86, 114, 142, 170]
+    ];
+    var G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0);
+    var G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0);
+    var G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1);
+
+    var _this = {};
+
+    var getBCHDigit = function(data) {
+      var digit = 0;
+      while (data != 0) {
+        digit += 1;
+        data >>>= 1;
+      }
+      return digit;
+    };
+
+    _this.getBCHTypeInfo = function(data) {
+      var d = data << 10;
+      while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
+        d ^= (G15 << (getBCHDigit(d) - getBCHDigit(G15) ) );
+      }
+      return ( (data << 10) | d) ^ G15_MASK;
+    };
+
+    _this.getBCHTypeNumber = function(data) {
+      var d = data << 12;
+      while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
+        d ^= (G18 << (getBCHDigit(d) - getBCHDigit(G18) ) );
+      }
+      return (data << 12) | d;
+    };
+
+    _this.getPatternPosition = function(typeNumber) {
+      return PATTERN_POSITION_TABLE[typeNumber - 1];
+    };
+
+    _this.getMaskFunction = function(maskPattern) {
+
+      switch (maskPattern) {
+
+      case QRMaskPattern.PATTERN000 :
+        return function(i, j) { return (i + j) % 2 == 0; };
+      case QRMaskPattern.PATTERN001 :
+        return function(i, j) { return i % 2 == 0; };
+      case QRMaskPattern.PATTERN010 :
+        return function(i, j) { return j % 3 == 0; };
+      case QRMaskPattern.PATTERN011 :
+        return function(i, j) { return (i + j) % 3 == 0; };
+      case QRMaskPattern.PATTERN100 :
+        return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+      case QRMaskPattern.PATTERN101 :
+        return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+      case QRMaskPattern.PATTERN110 :
+        return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+      case QRMaskPattern.PATTERN111 :
+        return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+
+      default :
+        throw 'bad maskPattern:' + maskPattern;
+      }
+    };
+
+    _this.getErrorCorrectPolynomial = function(errorCorrectLength) {
+      var a = qrPolynomial([1], 0);
+      for (var i = 0; i < errorCorrectLength; i += 1) {
+        a = a.multiply(qrPolynomial([1, QRMath.gexp(i)], 0) );
+      }
+      return a;
+    };
+
+    _this.getLengthInBits = function(mode, type) {
+
+      if (1 <= type && type < 10) {
+
+        // 1 - 9
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 10;
+        case QRMode.MODE_ALPHA_NUM : return 9;
+        case QRMode.MODE_8BIT_BYTE : return 8;
+        case QRMode.MODE_KANJI     : return 8;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 27) {
+
+        // 10 - 26
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 12;
+        case QRMode.MODE_ALPHA_NUM : return 11;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 10;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else if (type < 41) {
+
+        // 27 - 40
+
+        switch(mode) {
+        case QRMode.MODE_NUMBER    : return 14;
+        case QRMode.MODE_ALPHA_NUM : return 13;
+        case QRMode.MODE_8BIT_BYTE : return 16;
+        case QRMode.MODE_KANJI     : return 12;
+        default :
+          throw 'mode:' + mode;
+        }
+
+      } else {
+        throw 'type:' + type;
+      }
+    };
+
+    _this.getLostPoint = function(qrcode) {
+
+      var moduleCount = qrcode.getModuleCount();
+
+      var lostPoint = 0;
+
+      // LEVEL1
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount; col += 1) {
+
+          var sameCount = 0;
+          var dark = qrcode.isDark(row, col);
+
+          for (var r = -1; r <= 1; r += 1) {
+
+            if (row + r < 0 || moduleCount <= row + r) {
+              continue;
+            }
+
+            for (var c = -1; c <= 1; c += 1) {
+
+              if (col + c < 0 || moduleCount <= col + c) {
+                continue;
+              }
+
+              if (r == 0 && c == 0) {
+                continue;
+              }
+
+              if (dark == qrcode.isDark(row + r, col + c) ) {
+                sameCount += 1;
+              }
+            }
+          }
+
+          if (sameCount > 5) {
+            lostPoint += (3 + sameCount - 5);
+          }
+        }
+      };
+
+      // LEVEL2
+
+      for (var row = 0; row < moduleCount - 1; row += 1) {
+        for (var col = 0; col < moduleCount - 1; col += 1) {
+          var count = 0;
+          if (qrcode.isDark(row, col) ) count += 1;
+          if (qrcode.isDark(row + 1, col) ) count += 1;
+          if (qrcode.isDark(row, col + 1) ) count += 1;
+          if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+          if (count == 0 || count == 4) {
+            lostPoint += 3;
+          }
+        }
+      }
+
+      // LEVEL3
+
+      for (var row = 0; row < moduleCount; row += 1) {
+        for (var col = 0; col < moduleCount - 6; col += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row, col + 1)
+              &&  qrcode.isDark(row, col + 2)
+              &&  qrcode.isDark(row, col + 3)
+              &&  qrcode.isDark(row, col + 4)
+              && !qrcode.isDark(row, col + 5)
+              &&  qrcode.isDark(row, col + 6) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount - 6; row += 1) {
+          if (qrcode.isDark(row, col)
+              && !qrcode.isDark(row + 1, col)
+              &&  qrcode.isDark(row + 2, col)
+              &&  qrcode.isDark(row + 3, col)
+              &&  qrcode.isDark(row + 4, col)
+              && !qrcode.isDark(row + 5, col)
+              &&  qrcode.isDark(row + 6, col) ) {
+            lostPoint += 40;
+          }
+        }
+      }
+
+      // LEVEL4
+
+      var darkCount = 0;
+
+      for (var col = 0; col < moduleCount; col += 1) {
+        for (var row = 0; row < moduleCount; row += 1) {
+          if (qrcode.isDark(row, col) ) {
+            darkCount += 1;
+          }
+        }
+      }
+
+      var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+      lostPoint += ratio * 10;
+
+      return lostPoint;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // QRMath
+  //---------------------------------------------------------------------
+
+  var QRMath = function() {
+
+    var EXP_TABLE = new Array(256);
+    var LOG_TABLE = new Array(256);
+
+    // initialize tables
+    for (var i = 0; i < 8; i += 1) {
+      EXP_TABLE[i] = 1 << i;
+    }
+    for (var i = 8; i < 256; i += 1) {
+      EXP_TABLE[i] = EXP_TABLE[i - 4]
+        ^ EXP_TABLE[i - 5]
+        ^ EXP_TABLE[i - 6]
+        ^ EXP_TABLE[i - 8];
+    }
+    for (var i = 0; i < 255; i += 1) {
+      LOG_TABLE[EXP_TABLE[i] ] = i;
+    }
+
+    var _this = {};
+
+    _this.glog = function(n) {
+
+      if (n < 1) {
+        throw 'glog(' + n + ')';
+      }
+
+      return LOG_TABLE[n];
+    };
+
+    _this.gexp = function(n) {
+
+      while (n < 0) {
+        n += 255;
+      }
+
+      while (n >= 256) {
+        n -= 255;
+      }
+
+      return EXP_TABLE[n];
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrPolynomial
+  //---------------------------------------------------------------------
+
+  function qrPolynomial(num, shift) {
+
+    if (typeof num.length == 'undefined') {
+      throw num.length + '/' + shift;
+    }
+
+    var _num = function() {
+      var offset = 0;
+      while (offset < num.length && num[offset] == 0) {
+        offset += 1;
+      }
+      var _num = new Array(num.length - offset + shift);
+      for (var i = 0; i < num.length - offset; i += 1) {
+        _num[i] = num[i + offset];
+      }
+      return _num;
+    }();
+
+    var _this = {};
+
+    _this.getAt = function(index) {
+      return _num[index];
+    };
+
+    _this.getLength = function() {
+      return _num.length;
+    };
+
+    _this.multiply = function(e) {
+
+      var num = new Array(_this.getLength() + e.getLength() - 1);
+
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        for (var j = 0; j < e.getLength(); j += 1) {
+          num[i + j] ^= QRMath.gexp(QRMath.glog(_this.getAt(i) ) + QRMath.glog(e.getAt(j) ) );
+        }
+      }
+
+      return qrPolynomial(num, 0);
+    };
+
+    _this.mod = function(e) {
+
+      if (_this.getLength() - e.getLength() < 0) {
+        return _this;
+      }
+
+      var ratio = QRMath.glog(_this.getAt(0) ) - QRMath.glog(e.getAt(0) );
+
+      var num = new Array(_this.getLength() );
+      for (var i = 0; i < _this.getLength(); i += 1) {
+        num[i] = _this.getAt(i);
+      }
+
+      for (var i = 0; i < e.getLength(); i += 1) {
+        num[i] ^= QRMath.gexp(QRMath.glog(e.getAt(i) ) + ratio);
+      }
+
+      // recursive call
+      return qrPolynomial(num, 0).mod(e);
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // QRRSBlock
+  //---------------------------------------------------------------------
+
+  var QRRSBlock = function() {
+
+    var RS_BLOCK_TABLE = [
+
+      // L
+      // M
+      // Q
+      // H
+
+      // 1
+      [1, 26, 19],
+      [1, 26, 16],
+      [1, 26, 13],
+      [1, 26, 9],
+
+      // 2
+      [1, 44, 34],
+      [1, 44, 28],
+      [1, 44, 22],
+      [1, 44, 16],
+
+      // 3
+      [1, 70, 55],
+      [1, 70, 44],
+      [2, 35, 17],
+      [2, 35, 13],
+
+      // 4
+      [1, 100, 80],
+      [2, 50, 32],
+      [2, 50, 24],
+      [4, 25, 9],
+
+      // 5
+      [1, 134, 108],
+      [2, 67, 43],
+      [2, 33, 15, 2, 34, 16],
+      [2, 33, 11, 2, 34, 12],
+
+      // 6
+      [2, 86, 68],
+      [4, 43, 27],
+      [4, 43, 19],
+      [4, 43, 15],
+
+      // 7
+      [2, 98, 78],
+      [4, 49, 31],
+      [2, 32, 14, 4, 33, 15],
+      [4, 39, 13, 1, 40, 14],
+
+      // 8
+      [2, 121, 97],
+      [2, 60, 38, 2, 61, 39],
+      [4, 40, 18, 2, 41, 19],
+      [4, 40, 14, 2, 41, 15],
+
+      // 9
+      [2, 146, 116],
+      [3, 58, 36, 2, 59, 37],
+      [4, 36, 16, 4, 37, 17],
+      [4, 36, 12, 4, 37, 13],
+
+      // 10
+      [2, 86, 68, 2, 87, 69],
+      [4, 69, 43, 1, 70, 44],
+      [6, 43, 19, 2, 44, 20],
+      [6, 43, 15, 2, 44, 16],
+
+      // 11
+      [4, 101, 81],
+      [1, 80, 50, 4, 81, 51],
+      [4, 50, 22, 4, 51, 23],
+      [3, 36, 12, 8, 37, 13],
+
+      // 12
+      [2, 116, 92, 2, 117, 93],
+      [6, 58, 36, 2, 59, 37],
+      [4, 46, 20, 6, 47, 21],
+      [7, 42, 14, 4, 43, 15],
+
+      // 13
+      [4, 133, 107],
+      [8, 59, 37, 1, 60, 38],
+      [8, 44, 20, 4, 45, 21],
+      [12, 33, 11, 4, 34, 12],
+
+      // 14
+      [3, 145, 115, 1, 146, 116],
+      [4, 64, 40, 5, 65, 41],
+      [11, 36, 16, 5, 37, 17],
+      [11, 36, 12, 5, 37, 13],
+
+      // 15
+      [5, 109, 87, 1, 110, 88],
+      [5, 65, 41, 5, 66, 42],
+      [5, 54, 24, 7, 55, 25],
+      [11, 36, 12, 7, 37, 13],
+
+      // 16
+      [5, 122, 98, 1, 123, 99],
+      [7, 73, 45, 3, 74, 46],
+      [15, 43, 19, 2, 44, 20],
+      [3, 45, 15, 13, 46, 16],
+
+      // 17
+      [1, 135, 107, 5, 136, 108],
+      [10, 74, 46, 1, 75, 47],
+      [1, 50, 22, 15, 51, 23],
+      [2, 42, 14, 17, 43, 15],
+
+      // 18
+      [5, 150, 120, 1, 151, 121],
+      [9, 69, 43, 4, 70, 44],
+      [17, 50, 22, 1, 51, 23],
+      [2, 42, 14, 19, 43, 15],
+
+      // 19
+      [3, 141, 113, 4, 142, 114],
+      [3, 70, 44, 11, 71, 45],
+      [17, 47, 21, 4, 48, 22],
+      [9, 39, 13, 16, 40, 14],
+
+      // 20
+      [3, 135, 107, 5, 136, 108],
+      [3, 67, 41, 13, 68, 42],
+      [15, 54, 24, 5, 55, 25],
+      [15, 43, 15, 10, 44, 16],
+
+      // 21
+      [4, 144, 116, 4, 145, 117],
+      [17, 68, 42],
+      [17, 50, 22, 6, 51, 23],
+      [19, 46, 16, 6, 47, 17],
+
+      // 22
+      [2, 139, 111, 7, 140, 112],
+      [17, 74, 46],
+      [7, 54, 24, 16, 55, 25],
+      [34, 37, 13],
+
+      // 23
+      [4, 151, 121, 5, 152, 122],
+      [4, 75, 47, 14, 76, 48],
+      [11, 54, 24, 14, 55, 25],
+      [16, 45, 15, 14, 46, 16],
+
+      // 24
+      [6, 147, 117, 4, 148, 118],
+      [6, 73, 45, 14, 74, 46],
+      [11, 54, 24, 16, 55, 25],
+      [30, 46, 16, 2, 47, 17],
+
+      // 25
+      [8, 132, 106, 4, 133, 107],
+      [8, 75, 47, 13, 76, 48],
+      [7, 54, 24, 22, 55, 25],
+      [22, 45, 15, 13, 46, 16],
+
+      // 26
+      [10, 142, 114, 2, 143, 115],
+      [19, 74, 46, 4, 75, 47],
+      [28, 50, 22, 6, 51, 23],
+      [33, 46, 16, 4, 47, 17],
+
+      // 27
+      [8, 152, 122, 4, 153, 123],
+      [22, 73, 45, 3, 74, 46],
+      [8, 53, 23, 26, 54, 24],
+      [12, 45, 15, 28, 46, 16],
+
+      // 28
+      [3, 147, 117, 10, 148, 118],
+      [3, 73, 45, 23, 74, 46],
+      [4, 54, 24, 31, 55, 25],
+      [11, 45, 15, 31, 46, 16],
+
+      // 29
+      [7, 146, 116, 7, 147, 117],
+      [21, 73, 45, 7, 74, 46],
+      [1, 53, 23, 37, 54, 24],
+      [19, 45, 15, 26, 46, 16],
+
+      // 30
+      [5, 145, 115, 10, 146, 116],
+      [19, 75, 47, 10, 76, 48],
+      [15, 54, 24, 25, 55, 25],
+      [23, 45, 15, 25, 46, 16],
+
+      // 31
+      [13, 145, 115, 3, 146, 116],
+      [2, 74, 46, 29, 75, 47],
+      [42, 54, 24, 1, 55, 25],
+      [23, 45, 15, 28, 46, 16],
+
+      // 32
+      [17, 145, 115],
+      [10, 74, 46, 23, 75, 47],
+      [10, 54, 24, 35, 55, 25],
+      [19, 45, 15, 35, 46, 16],
+
+      // 33
+      [17, 145, 115, 1, 146, 116],
+      [14, 74, 46, 21, 75, 47],
+      [29, 54, 24, 19, 55, 25],
+      [11, 45, 15, 46, 46, 16],
+
+      // 34
+      [13, 145, 115, 6, 146, 116],
+      [14, 74, 46, 23, 75, 47],
+      [44, 54, 24, 7, 55, 25],
+      [59, 46, 16, 1, 47, 17],
+
+      // 35
+      [12, 151, 121, 7, 152, 122],
+      [12, 75, 47, 26, 76, 48],
+      [39, 54, 24, 14, 55, 25],
+      [22, 45, 15, 41, 46, 16],
+
+      // 36
+      [6, 151, 121, 14, 152, 122],
+      [6, 75, 47, 34, 76, 48],
+      [46, 54, 24, 10, 55, 25],
+      [2, 45, 15, 64, 46, 16],
+
+      // 37
+      [17, 152, 122, 4, 153, 123],
+      [29, 74, 46, 14, 75, 47],
+      [49, 54, 24, 10, 55, 25],
+      [24, 45, 15, 46, 46, 16],
+
+      // 38
+      [4, 152, 122, 18, 153, 123],
+      [13, 74, 46, 32, 75, 47],
+      [48, 54, 24, 14, 55, 25],
+      [42, 45, 15, 32, 46, 16],
+
+      // 39
+      [20, 147, 117, 4, 148, 118],
+      [40, 75, 47, 7, 76, 48],
+      [43, 54, 24, 22, 55, 25],
+      [10, 45, 15, 67, 46, 16],
+
+      // 40
+      [19, 148, 118, 6, 149, 119],
+      [18, 75, 47, 31, 76, 48],
+      [34, 54, 24, 34, 55, 25],
+      [20, 45, 15, 61, 46, 16]
+    ];
+
+    var qrRSBlock = function(totalCount, dataCount) {
+      var _this = {};
+      _this.totalCount = totalCount;
+      _this.dataCount = dataCount;
+      return _this;
+    };
+
+    var _this = {};
+
+    var getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
+
+      switch(errorCorrectionLevel) {
+      case QRErrorCorrectionLevel.L :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+      case QRErrorCorrectionLevel.M :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+      case QRErrorCorrectionLevel.Q :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+      case QRErrorCorrectionLevel.H :
+        return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+      default :
+        return undefined;
+      }
+    };
+
+    _this.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+
+      var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
+
+      if (typeof rsBlock == 'undefined') {
+        throw 'bad rs block @ typeNumber:' + typeNumber +
+            '/errorCorrectionLevel:' + errorCorrectionLevel;
+      }
+
+      var length = rsBlock.length / 3;
+
+      var list = [];
+
+      for (var i = 0; i < length; i += 1) {
+
+        var count = rsBlock[i * 3 + 0];
+        var totalCount = rsBlock[i * 3 + 1];
+        var dataCount = rsBlock[i * 3 + 2];
+
+        for (var j = 0; j < count; j += 1) {
+          list.push(qrRSBlock(totalCount, dataCount) );
+        }
+      }
+
+      return list;
+    };
+
+    return _this;
+  }();
+
+  //---------------------------------------------------------------------
+  // qrBitBuffer
+  //---------------------------------------------------------------------
+
+  var qrBitBuffer = function() {
+
+    var _buffer = [];
+    var _length = 0;
+
+    var _this = {};
+
+    _this.getBuffer = function() {
+      return _buffer;
+    };
+
+    _this.getAt = function(index) {
+      var bufIndex = Math.floor(index / 8);
+      return ( (_buffer[bufIndex] >>> (7 - index % 8) ) & 1) == 1;
+    };
+
+    _this.put = function(num, length) {
+      for (var i = 0; i < length; i += 1) {
+        _this.putBit( ( (num >>> (length - i - 1) ) & 1) == 1);
+      }
+    };
+
+    _this.getLengthInBits = function() {
+      return _length;
+    };
+
+    _this.putBit = function(bit) {
+
+      var bufIndex = Math.floor(_length / 8);
+      if (_buffer.length <= bufIndex) {
+        _buffer.push(0);
+      }
+
+      if (bit) {
+        _buffer[bufIndex] |= (0x80 >>> (_length % 8) );
+      }
+
+      _length += 1;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrNumber
+  //---------------------------------------------------------------------
+
+  var qrNumber = function(data) {
+
+    var _mode = QRMode.MODE_NUMBER;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _data;
+
+      var i = 0;
+
+      while (i + 2 < data.length) {
+        buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+        i += 3;
+      }
+
+      if (i < data.length) {
+        if (data.length - i == 1) {
+          buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+        } else if (data.length - i == 2) {
+          buffer.put(strToNum(data.substring(i, i + 2) ), 7);
+        }
+      }
+    };
+
+    var strToNum = function(s) {
+      var num = 0;
+      for (var i = 0; i < s.length; i += 1) {
+        num = num * 10 + chatToNum(s.charAt(i) );
+      }
+      return num;
+    };
+
+    var chatToNum = function(c) {
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      }
+      throw 'illegal char :' + c;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrAlphaNum
+  //---------------------------------------------------------------------
+
+  var qrAlphaNum = function(data) {
+
+    var _mode = QRMode.MODE_ALPHA_NUM;
+    var _data = data;
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _data.length;
+    };
+
+    _this.write = function(buffer) {
+
+      var s = _data;
+
+      var i = 0;
+
+      while (i + 1 < s.length) {
+        buffer.put(
+          getCode(s.charAt(i) ) * 45 +
+          getCode(s.charAt(i + 1) ), 11);
+        i += 2;
+      }
+
+      if (i < s.length) {
+        buffer.put(getCode(s.charAt(i) ), 6);
+      }
+    };
+
+    var getCode = function(c) {
+
+      if ('0' <= c && c <= '9') {
+        return c.charCodeAt(0) - '0'.charCodeAt(0);
+      } else if ('A' <= c && c <= 'Z') {
+        return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+      } else {
+        switch (c) {
+        case ' ' : return 36;
+        case '$' : return 37;
+        case '%' : return 38;
+        case '*' : return 39;
+        case '+' : return 40;
+        case '-' : return 41;
+        case '.' : return 42;
+        case '/' : return 43;
+        case ':' : return 44;
+        default :
+          throw 'illegal char :' + c;
+        }
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qr8BitByte
+  //---------------------------------------------------------------------
+
+  var qr8BitByte = function(data) {
+
+    var _mode = QRMode.MODE_8BIT_BYTE;
+    var _data = data;
+    var _bytes = qrcode.stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return _bytes.length;
+    };
+
+    _this.write = function(buffer) {
+      for (var i = 0; i < _bytes.length; i += 1) {
+        buffer.put(_bytes[i], 8);
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // qrKanji
+  //---------------------------------------------------------------------
+
+  var qrKanji = function(data) {
+
+    var _mode = QRMode.MODE_KANJI;
+    var _data = data;
+
+    var stringToBytes = qrcode.stringToBytesFuncs['SJIS'];
+    if (!stringToBytes) {
+      throw 'sjis not supported.';
+    }
+    !function(c, code) {
+      // self test for sjis support.
+      var test = stringToBytes(c);
+      if (test.length != 2 || ( (test[0] << 8) | test[1]) != code) {
+        throw 'sjis not supported.';
+      }
+    }('\u53cb', 0x9746);
+
+    var _bytes = stringToBytes(data);
+
+    var _this = {};
+
+    _this.getMode = function() {
+      return _mode;
+    };
+
+    _this.getLength = function(buffer) {
+      return ~~(_bytes.length / 2);
+    };
+
+    _this.write = function(buffer) {
+
+      var data = _bytes;
+
+      var i = 0;
+
+      while (i + 1 < data.length) {
+
+        var c = ( (0xff & data[i]) << 8) | (0xff & data[i + 1]);
+
+        if (0x8140 <= c && c <= 0x9FFC) {
+          c -= 0x8140;
+        } else if (0xE040 <= c && c <= 0xEBBF) {
+          c -= 0xC140;
+        } else {
+          throw 'illegal char at ' + (i + 1) + '/' + c;
+        }
+
+        c = ( (c >>> 8) & 0xff) * 0xC0 + (c & 0xff);
+
+        buffer.put(c, 13);
+
+        i += 2;
+      }
+
+      if (i < data.length) {
+        throw 'illegal char at ' + (i + 1);
+      }
+    };
+
+    return _this;
+  };
+
+  //=====================================================================
+  // GIF Support etc.
+  //
+
+  //---------------------------------------------------------------------
+  // byteArrayOutputStream
+  //---------------------------------------------------------------------
+
+  var byteArrayOutputStream = function() {
+
+    var _bytes = [];
+
+    var _this = {};
+
+    _this.writeByte = function(b) {
+      _bytes.push(b & 0xff);
+    };
+
+    _this.writeShort = function(i) {
+      _this.writeByte(i);
+      _this.writeByte(i >>> 8);
+    };
+
+    _this.writeBytes = function(b, off, len) {
+      off = off || 0;
+      len = len || b.length;
+      for (var i = 0; i < len; i += 1) {
+        _this.writeByte(b[i + off]);
+      }
+    };
+
+    _this.writeString = function(s) {
+      for (var i = 0; i < s.length; i += 1) {
+        _this.writeByte(s.charCodeAt(i) );
+      }
+    };
+
+    _this.toByteArray = function() {
+      return _bytes;
+    };
+
+    _this.toString = function() {
+      var s = '';
+      s += '[';
+      for (var i = 0; i < _bytes.length; i += 1) {
+        if (i > 0) {
+          s += ',';
+        }
+        s += _bytes[i];
+      }
+      s += ']';
+      return s;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64EncodeOutputStream
+  //---------------------------------------------------------------------
+
+  var base64EncodeOutputStream = function() {
+
+    var _buffer = 0;
+    var _buflen = 0;
+    var _length = 0;
+    var _base64 = '';
+
+    var _this = {};
+
+    var writeEncoded = function(b) {
+      _base64 += String.fromCharCode(encode(b & 0x3f) );
+    };
+
+    var encode = function(n) {
+      if (n < 0) {
+        // error.
+      } else if (n < 26) {
+        return 0x41 + n;
+      } else if (n < 52) {
+        return 0x61 + (n - 26);
+      } else if (n < 62) {
+        return 0x30 + (n - 52);
+      } else if (n == 62) {
+        return 0x2b;
+      } else if (n == 63) {
+        return 0x2f;
+      }
+      throw 'n:' + n;
+    };
+
+    _this.writeByte = function(n) {
+
+      _buffer = (_buffer << 8) | (n & 0xff);
+      _buflen += 8;
+      _length += 1;
+
+      while (_buflen >= 6) {
+        writeEncoded(_buffer >>> (_buflen - 6) );
+        _buflen -= 6;
+      }
+    };
+
+    _this.flush = function() {
+
+      if (_buflen > 0) {
+        writeEncoded(_buffer << (6 - _buflen) );
+        _buffer = 0;
+        _buflen = 0;
+      }
+
+      if (_length % 3 != 0) {
+        // padding
+        var padlen = 3 - _length % 3;
+        for (var i = 0; i < padlen; i += 1) {
+          _base64 += '=';
+        }
+      }
+    };
+
+    _this.toString = function() {
+      return _base64;
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // base64DecodeInputStream
+  //---------------------------------------------------------------------
+
+  var base64DecodeInputStream = function(str) {
+
+    var _str = str;
+    var _pos = 0;
+    var _buffer = 0;
+    var _buflen = 0;
+
+    var _this = {};
+
+    _this.read = function() {
+
+      while (_buflen < 8) {
+
+        if (_pos >= _str.length) {
+          if (_buflen == 0) {
+            return -1;
+          }
+          throw 'unexpected end of file./' + _buflen;
+        }
+
+        var c = _str.charAt(_pos);
+        _pos += 1;
+
+        if (c == '=') {
+          _buflen = 0;
+          return -1;
+        } else if (c.match(/^\s$/) ) {
+          // ignore if whitespace.
+          continue;
+        }
+
+        _buffer = (_buffer << 6) | decode(c.charCodeAt(0) );
+        _buflen += 6;
+      }
+
+      var n = (_buffer >>> (_buflen - 8) ) & 0xff;
+      _buflen -= 8;
+      return n;
+    };
+
+    var decode = function(c) {
+      if (0x41 <= c && c <= 0x5a) {
+        return c - 0x41;
+      } else if (0x61 <= c && c <= 0x7a) {
+        return c - 0x61 + 26;
+      } else if (0x30 <= c && c <= 0x39) {
+        return c - 0x30 + 52;
+      } else if (c == 0x2b) {
+        return 62;
+      } else if (c == 0x2f) {
+        return 63;
+      } else {
+        throw 'c:' + c;
+      }
+    };
+
+    return _this;
+  };
+
+  //---------------------------------------------------------------------
+  // gifImage (B/W)
+  //---------------------------------------------------------------------
+
+  var gifImage = function(width, height) {
+
+    var _width = width;
+    var _height = height;
+    var _data = new Array(width * height);
+
+    var _this = {};
+
+    _this.setPixel = function(x, y, pixel) {
+      _data[y * _width + x] = pixel;
+    };
+
+    _this.write = function(out) {
+
+      //---------------------------------
+      // GIF Signature
+
+      out.writeString('GIF87a');
+
+      //---------------------------------
+      // Screen Descriptor
+
+      out.writeShort(_width);
+      out.writeShort(_height);
+
+      out.writeByte(0x80); // 2bit
+      out.writeByte(0);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Global Color Map
+
+      // black
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+      out.writeByte(0x00);
+
+      // white
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+      out.writeByte(0xff);
+
+      //---------------------------------
+      // Image Descriptor
+
+      out.writeString(',');
+      out.writeShort(0);
+      out.writeShort(0);
+      out.writeShort(_width);
+      out.writeShort(_height);
+      out.writeByte(0);
+
+      //---------------------------------
+      // Local Color Map
+
+      //---------------------------------
+      // Raster Data
+
+      var lzwMinCodeSize = 2;
+      var raster = getLZWRaster(lzwMinCodeSize);
+
+      out.writeByte(lzwMinCodeSize);
+
+      var offset = 0;
+
+      while (raster.length - offset > 255) {
+        out.writeByte(255);
+        out.writeBytes(raster, offset, 255);
+        offset += 255;
+      }
+
+      out.writeByte(raster.length - offset);
+      out.writeBytes(raster, offset, raster.length - offset);
+      out.writeByte(0x00);
+
+      //---------------------------------
+      // GIF Terminator
+      out.writeString(';');
+    };
+
+    var bitOutputStream = function(out) {
+
+      var _out = out;
+      var _bitLength = 0;
+      var _bitBuffer = 0;
+
+      var _this = {};
+
+      _this.write = function(data, length) {
+
+        if ( (data >>> length) != 0) {
+          throw 'length over';
+        }
+
+        while (_bitLength + length >= 8) {
+          _out.writeByte(0xff & ( (data << _bitLength) | _bitBuffer) );
+          length -= (8 - _bitLength);
+          data >>>= (8 - _bitLength);
+          _bitBuffer = 0;
+          _bitLength = 0;
+        }
+
+        _bitBuffer = (data << _bitLength) | _bitBuffer;
+        _bitLength = _bitLength + length;
+      };
+
+      _this.flush = function() {
+        if (_bitLength > 0) {
+          _out.writeByte(_bitBuffer);
+        }
+      };
+
+      return _this;
+    };
+
+    var getLZWRaster = function(lzwMinCodeSize) {
+
+      var clearCode = 1 << lzwMinCodeSize;
+      var endCode = (1 << lzwMinCodeSize) + 1;
+      var bitLength = lzwMinCodeSize + 1;
+
+      // Setup LZWTable
+      var table = lzwTable();
+
+      for (var i = 0; i < clearCode; i += 1) {
+        table.add(String.fromCharCode(i) );
+      }
+      table.add(String.fromCharCode(clearCode) );
+      table.add(String.fromCharCode(endCode) );
+
+      var byteOut = byteArrayOutputStream();
+      var bitOut = bitOutputStream(byteOut);
+
+      // clear code
+      bitOut.write(clearCode, bitLength);
+
+      var dataIndex = 0;
+
+      var s = String.fromCharCode(_data[dataIndex]);
+      dataIndex += 1;
+
+      while (dataIndex < _data.length) {
+
+        var c = String.fromCharCode(_data[dataIndex]);
+        dataIndex += 1;
+
+        if (table.contains(s + c) ) {
+
+          s = s + c;
+
+        } else {
+
+          bitOut.write(table.indexOf(s), bitLength);
+
+          if (table.size() < 0xfff) {
+
+            if (table.size() == (1 << bitLength) ) {
+              bitLength += 1;
+            }
+
+            table.add(s + c);
+          }
+
+          s = c;
+        }
+      }
+
+      bitOut.write(table.indexOf(s), bitLength);
+
+      // end code
+      bitOut.write(endCode, bitLength);
+
+      bitOut.flush();
+
+      return byteOut.toByteArray();
+    };
+
+    var lzwTable = function() {
+
+      var _map = {};
+      var _size = 0;
+
+      var _this = {};
+
+      _this.add = function(key) {
+        if (_this.contains(key) ) {
+          throw 'dup key:' + key;
+        }
+        _map[key] = _size;
+        _size += 1;
+      };
+
+      _this.size = function() {
+        return _size;
+      };
+
+      _this.indexOf = function(key) {
+        return _map[key];
+      };
+
+      _this.contains = function(key) {
+        return typeof _map[key] != 'undefined';
+      };
+
+      return _this;
+    };
+
+    return _this;
+  };
+
+  var createDataURL = function(width, height, getPixel) {
+    var gif = gifImage(width, height);
+    for (var y = 0; y < height; y += 1) {
+      for (var x = 0; x < width; x += 1) {
+        gif.setPixel(x, y, getPixel(x, y) );
+      }
+    }
+
+    var b = byteArrayOutputStream();
+    gif.write(b);
+
+    var base64 = base64EncodeOutputStream();
+    var bytes = b.toByteArray();
+    for (var i = 0; i < bytes.length; i += 1) {
+      base64.writeByte(bytes[i]);
+    }
+    base64.flush();
+
+    return 'data:image/gif;base64,' + base64;
+  };
+
+  //---------------------------------------------------------------------
+  // returns qrcode function.
+
+  return qrcode;
+}();
+
+// multibyte support
+!function() {
+
+  qrcode.stringToBytesFuncs['UTF-8'] = function(s) {
+    // http://stackoverflow.com/questions/18729405/how-to-convert-utf8-string-to-byte-array
+    function toUTF8Array(str) {
+      var utf8 = [];
+      for (var i=0; i < str.length; i++) {
+        var charcode = str.charCodeAt(i);
+        if (charcode < 0x80) utf8.push(charcode);
+        else if (charcode < 0x800) {
+          utf8.push(0xc0 | (charcode >> 6),
+              0x80 | (charcode & 0x3f));
+        }
+        else if (charcode < 0xd800 || charcode >= 0xe000) {
+          utf8.push(0xe0 | (charcode >> 12),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+        // surrogate pair
+        else {
+          i++;
+          // UTF-16 encodes 0x10000-0x10FFFF by
+          // subtracting 0x10000 and splitting the
+          // 20 bits of 0x0-0xFFFFF into two halves
+          charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+            | (str.charCodeAt(i) & 0x3ff));
+          utf8.push(0xf0 | (charcode >>18),
+              0x80 | ((charcode>>12) & 0x3f),
+              0x80 | ((charcode>>6) & 0x3f),
+              0x80 | (charcode & 0x3f));
+        }
+      }
+      return utf8;
+    }
+    return toUTF8Array(s);
+  };
+
+}();
+
+(function (factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof exports === 'object') {
+      module.exports = factory();
+  }
+}(function () {
+    return qrcode;
+}));
+
+</script>
+<script>
+(function(){
+'use strict';
+/* ===== CONFIGURACIÓN =====
+   Pega entre las comillas la URL de la aplicación web de Apps Script (termina en /exec).
+   Con las comillas vacías la app funciona en modo demostración, sin conexión a la hoja. */
+var API_URL='';
+var DEMO=!API_URL;
+var LS={get:function(k,d){try{var v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}},del:function(k){try{localStorage.removeItem(k);}catch(e){}}};
+var norm=function(s){return String(s===null||s===undefined?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');};
+var esc=function(s){return String(s===null||s===undefined?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var pad=function(n){return (n<10?'0':'')+n;};
+var CATS=['Herramienta manual','Herramienta eléctrica','Tornillería','Recambios','Consumibles','Lubricantes y químicos','Electricidad','Ropa SC','Bebidas y comida','Menaje','Limpieza','Varios'];
+var CAJA_TIPOS=[['C5','Caja 5 L'],['C11','Caja 11 L'],['ORG','Organizador con tapa'],['GAV','Gaveta de tornillería'],['CAJA','Caja de cartón u otra']];
+
+/* ---------- Muebles: plano y geometría 3D según las fotos ---------- */
+var OAK='#c98d4b',STEEL='#1c1c20',WHITE='#f2f1ee',ANTH='#3a3a40',BLUE='#2f6fd6',RED='#b5483c';
+function tall(pre,label,x){var a=[];for(var i=5;i>=1;i--)a.push({c:pre+i,l:'E'+i,n:label+', hueco '+i+(i===1?' (abajo)':i===5?' (arriba)':''),x:x,y:.04+(5-i)*.385,w:.84,h:.365,k:'open'});return a;}
+function rowCells(pre,lpre,label,n,x0,step,w,y,h,k){var a=[];for(var i=1;i<=n;i++)a.push({c:pre+i,l:lpre+i,n:label+' '+i,x:x0+(i-1)*step,y:y,w:w,h:h,k:k});return a;}
+function drawers(pre,label,x){return [[1.14,.11],[1.26,.19],[1.46,.19],[1.66,.29]].map(function(v,i){return {c:'CAJ-'+pre+(i+1),l:pre+(i+1),n:label+', cajón '+(i+1),x:x,y:v[0],w:.54,h:v[1],k:'drawer'};});}
+function two(pre,label,x,w,y,h){return [{c:pre+'-ALTO',l:'ALTO',n:label+', arriba',x:x,y:y,w:w,h:h,k:'open'},{c:pre+'-BAJO',l:'BAJO',n:label+', abajo',x:x,y:y+h+.02,w:w,h:h,k:'open'}];}
+function levels(n,W,h,split){var a=[];for(var i=n;i>=1;i--){var y=.07+(n-i)*(h+.05);if(split){a.push({c:'N'+i+'-IZQ',n:'Nivel '+i+', mitad izquierda',x:.06,y:y,w:W/2-.07,h:h,k:'open'});a.push({c:'N'+i+'-DER',n:'Nivel '+i+', mitad derecha',x:W/2+.01,y:y,w:W/2-.07,h:h,k:'open'});}else a.push({c:'N'+i,n:'Nivel '+i,x:.06,y:y,w:W-.12,h:h,k:'open'});}return a;}
+var EV_ARM={W:4.275,H:2,stage:'taller',blocks:[{x:0,y:0,w:4.275,h:2,d:.45,f:STEEL}],cells:[].concat(
+ tall('ALT-IZQ-E','Armario alto izquierdo',.03),rowCells('SUP-','S','Armario superior',4,.905,.619,.6,.04,.32,'door'),rowCells('PANEL-','P','Panel perforado, tramo',4,.905,.619,.6,.4,.62,'peg'),
+ [{c:'ENC',n:'Encimera',x:.9,y:1.04,w:2.475,h:.075,k:'wood'}],two('BAJ-IZQ','Armario bajo izquierdo',.92,.64,1.14,.39),drawers('A','Cajonera izquierda',1.59),drawers('B','Cajonera derecha',2.145),
+ two('BAJ-DER','Armario bajo derecho',2.7,.64,1.14,.39),tall('ALT-DER-E','Armario alto derecho',3.405))};
+function grid(lv,mods,mw,step,hh,vstep){var a=[];for(var k=lv;k>=1;k--)for(var m=1;m<=mods;m++)a.push({c:'N'+k+'-M'+m,n:'Nivel '+k+(k===1?' (abajo)':k===lv?' (arriba)':'')+', módulo '+m,x:.03+(m-1)*step,y:.03+(lv-k)*vstep,w:mw,h:hh,k:'open'});return a;}
+var EV_EST1={W:3.07,H:1.94,stage:'taller',float:.7,blocks:[{x:0,y:0,w:3.07,h:1.94,d:.18,f:STEEL}],cells:grid(5,3,.9833,1.0133,.352,.382)};
+var EV_EST2={W:2,H:1.94,stage:'taller',float:.7,blocks:[{x:0,y:0,w:2,h:1.94,d:.18,f:STEEL}],cells:grid(4,2,.955,.985,.4475,.4775)};
+var EV_APA={W:1.44,H:.86,stage:'living',light:1,blocks:[{x:0,y:.04,w:1.44,h:.79,d:.4,f:WHITE},{x:0,y:.83,w:1.44,h:.03,d:.4,f:OAK},{x:-.02,y:0,w:1.48,h:.04,d:.42,f:OAK}],cells:[].concat(
+ two('P1','Puerta izquierda',.03,.44,.07,.36),two('P2','Puerta central',.49,.44,.07,.36),
+ [{c:'C1',n:'Cajón 1',x:.95,y:.07,w:.46,h:.15,k:'drawer'},{c:'C2',n:'Cajón 2',x:.95,y:.24,w:.46,h:.15,k:'drawer'}],two('P3','Puerta derecha',.95,.46,.41,.195))};
+var EV_COC={W:2.6,H:2,stage:'living',front:'#47474e',blocks:[{x:0,y:.05,w:.6,h:1.95,d:.6,f:'#0c0c0e'},{x:.62,y:.1,w:1.3,h:.68,d:.35,f:ANTH},{x:.62,y:1.1,w:1.43,h:.9,d:.6,f:ANTH},{x:.6,y:1.06,w:1.47,h:.04,d:.62,f:OAK},{x:2.05,y:1.08,w:.55,h:.92,d:.6,f:'#0c0c0e'}],cells:[
+ {c:'NEVERA',n:'Nevera',x:.03,y:.09,w:.54,h:1.2,k:'fridge'},{c:'CONGELADOR',l:'CONG.',n:'Congelador',x:.03,y:1.31,w:.54,h:.66,k:'fridge'},
+ {c:'ALTO-1',l:'A1',n:'Mueble alto 1',x:.64,y:.12,w:.53,h:.64,k:'door'},{c:'ALTO-2',l:'A2',n:'Mueble alto 2',x:1.19,y:.12,w:.43,h:.64,k:'door'},{c:'ALTO-3',l:'A3',n:'Mueble alto 3',x:1.64,y:.12,w:.26,h:.64,k:'door'},
+ {c:'ENC',n:'Encimera',x:.62,y:1.045,w:1.43,h:.07,k:'wood'},
+ {c:'BAJO-1',l:'B1',n:'Bajo del fregadero',x:.64,y:1.14,w:.55,h:.82,k:'door'},{c:'BAJO-2',l:'B2',n:'Mueble bajo central',x:1.21,y:1.14,w:.42,h:.82,k:'door'},
+ {c:'CAJON',l:'CAJ',n:'Cajón',x:1.65,y:1.14,w:.38,h:.16,k:'drawer'},{c:'BAJO-3',l:'B3',n:'Mueble bajo del cajón',x:1.65,y:1.32,w:.38,h:.64,k:'door'},
+ {c:'HORNO',n:'Cocina de gas y horno',x:2.08,y:1.2,w:.49,h:.74,k:'oven'}]};
+var EV_BAN={W:.6,H:.81,stage:'living',light:1,blocks:[{x:.02,y:.73,w:.04,h:.08,d:.04,f:WHITE},{x:.54,y:.73,w:.04,h:.08,d:.04,f:WHITE},{x:0,y:0,w:.6,h:.73,d:.3,f:WHITE}],cells:[
+ {c:'C1',n:'Cajón 1',x:.03,y:.04,w:.26,h:.2,k:'drawer'},{c:'C2',n:'Cajón 2',x:.03,y:.265,w:.26,h:.2,k:'drawer'},{c:'C3',n:'Cajón 3',x:.03,y:.49,w:.26,h:.2,k:'drawer'},
+ {c:'P-ALTO',l:'ALTO',n:'Puerta, arriba',x:.32,y:.04,w:.25,h:.32,k:'open'},{c:'P-BAJO',l:'BAJO',n:'Puerta, abajo',x:.32,y:.38,w:.25,h:.31,k:'open'}]};
+var EV_TV={W:2.1,H:.2,stage:'living',light:1,float:.4,blocks:[{x:0,y:0,w:2.1,h:.2,d:.3,f:WHITE}],cells:[
+ {c:'TAPA',n:'Encima del mueble',k:'face'},{c:'IZQ',n:'Hueco izquierdo',x:.02,y:.025,w:.43,h:.15,k:'open'},{c:'CAJON',n:'Cajón central',x:.47,y:.025,w:1,h:.15,k:'drawer',f:'#4a3a33'},{c:'DER',n:'Hueco derecho',x:1.49,y:.025,w:.59,h:.15,k:'open'}]};
+var EV_RACK={W:1.2,H:1.45,stage:'foso',blocks:[{x:0,y:1.31,w:1.2,h:.14,d:1,f:BLUE,pal:1},{x:0,y:.62,w:.07,h:.69,d:.08,f:BLUE},{x:1.13,y:.62,w:.07,h:.69,d:1,f:BLUE},{x:0,y:.48,w:1.2,h:.14,d:1,f:BLUE,pal:1}],cells:[
+ {c:'N1',n:'Nivel bajo',x:.09,y:.64,w:1.02,h:.66,k:'air'},{c:'N2',n:'Nivel alto',x:.03,y:0,w:1.14,h:.47,k:'air'}]};
+var EV_PAL={W:1.2,H:.75,stage:'foso',blocks:[{x:0,y:.61,w:1.2,h:.14,d:.8,f:RED,pal:1}],cells:[{c:'',l:'',n:'Sobre el palet',x:.03,y:0,w:1.14,h:.6,k:'air'}]};
+var FURN=[
+ {id:'TAL-ARM',floor:'main',zone:'Taller',name:'Armario principal de taller',cx:.37,cy:7.04,w:.45,h:4.28,rot:0,lab:[.78,7.1,'start'],pc:'#141416',ev:EV_ARM},
+ {id:'TAL-EST1',floor:'main',zone:'Taller',name:'Estantería de pared grande',cx:4.42,cy:2.72,w:3.07,h:.3,rot:-24.1,lab:[4.2,3.75,'start'],pc:'#141416',ev:EV_EST1},
+ {id:'TAL-EST2',floor:'main',zone:'Taller',name:'Estantería de pared pequeña',cx:7.6,cy:1.3,w:2,h:.3,rot:-24.1,lab:[7.45,2.25,'start'],pc:'#141416',ev:EV_EST2},
+ {id:'LIV-APA1',floor:'main',zone:'Living',name:'Aparador 1',cx:5.3,cy:10.33,w:.5,h:1.05,rot:0,lab:[4.93,10.45,'end'],pc:WHITE,ev:EV_APA},
+ {id:'LIV-APA2',floor:'main',zone:'Living',name:'Aparador 2',cx:5.3,cy:11.43,w:.5,h:1.05,rot:0,lab:[4.93,11.55,'end'],pc:WHITE,ev:EV_APA},
+ {id:'LIV-APA3',floor:'main',zone:'Living',name:'Aparador 3',cx:5.3,cy:12.53,w:.5,h:1.05,rot:0,lab:[4.93,12.65,'end'],pc:WHITE,ev:EV_APA},
+ {id:'LIV-COC',floor:'main',zone:'Living',name:'Cocina y nevera',cx:1.72,cy:11.55,w:.6,h:2.7,rot:0,lab:[2.14,11.65,'start'],pc:ANTH,ev:EV_COC},
+ {id:'LIV-BAN',floor:'main',zone:'Living',name:'Mueble del baño',cx:1.02,cy:9.95,w:.45,h:.5,rot:0,lab:[.3,10.8,'start'],pc:WHITE,ev:EV_BAN},
+ {id:'LIV-TV',floor:'main',zone:'Living',name:'Mueble bajo la tele',cx:2.41,cy:17.75,w:.3,h:2.1,rot:0,lab:[2.7,17.85,'start'],pc:WHITE,ev:EV_TV}
+];
+for(var r=0;r<5;r++)FURN.push({id:'FOS-R'+(r+1),floor:'sot',zone:'Foso',name:'Estantería de palets '+(r+1),cx:9.25,cy:2.4+r*1.45,w:1,h:1.4,rot:0,lab:null,rack:true,pc:BLUE,ev:EV_RACK});
+FURN.forEach(function(f){f.subs=f.ev.cells.map(function(c){return {c:c.c,n:c.n};});});
+function evOf(id){var f=furnById(id);return f?f.ev:EV_PAL;}
+function fullCode(id,c){return c.c?id+'-'+c.c:id;}
+
+/* ---------- Datos, sesión y sincronización ---------- */
+function seedDemo(){
+ var P=[[5.67,3.28,-24],[6.75,2.75,-24],[7.85,2.2,-24],[1.75,6.3,90],[1.85,7.35,0],[3,6.2,0],[4.3,6.2,0],[5.75,5.15,0],[5.75,6.2,0],[2.35,10.3,90],[2.35,11.6,90],[3.05,13.35,0],[4.4,13.35,0],[6.65,10.1,90],[6.65,11.45,90],[6.65,12.8,90],[9.1,10.3,90],[9.1,11.55,90],[9.1,12.8,90]];
+ var cajas=[],i,add=function(pre,n,t,loc){for(i=1;i<=n;i++)cajas.push({id:pre+'-'+pad(i),t:t,loc:loc&&i<=12?loc:''});};
+ add('C5',12,'Caja 5 L');add('C11',8,'Caja 11 L');add('ORG',3,'Organizador con tapa');add('GAV',24,'Gaveta de tornillería','TAL-EST1-N2-M3');
+ var mk=function(id,name,qty,st,loc,tags,cat,min){return {id:id,name:name,qty:qty,st:st,loc:loc,tags:tags,cat:cat,min:min||0,notes:'',price:'',prov:'',date:'',foto:0,ej:1};};
+ return {pallets:P.map(function(p,k){return {id:'FOS-P'+pad(k+1),x:p[0],y:p[1],rot:p[2]};}),cajas:cajas,pos:{},items:[
+  mk('D1','Aceite motor 10W-40, 1 L',3,'ok','TAL-EST1-N3-M1','lubricante aceite','Lubricantes y químicos',2),
+  mk('D2','Juego de llaves de vaso 1/2"',1,'ok','TAL-ARM-CAJ-A1','carraca vasos','Herramienta manual'),
+  mk('D3','Tornillo allen M6x20',15,'low','GAV-01','hexagonal métrica 6','Tornillería',20),
+  mk('D4','Camisetas SC Motorsport talla L',12,'ok','LIV-APA1-P1-ALTO','ropa merchandising','Ropa SC'),
+  mk('D5','Agua 1,5 L',6,'ok','LIV-COC-NEVERA','bebidas','Bebidas y comida',6),
+  mk('D6','Escape de carcross usado',1,'ok','FOS-R2-N1','colector','Recambios'),
+  mk('D7','Bidón de gasolina 20 L',0,'empty','FOS-P03','combustible garrafa','Consumibles')]};
+}
+var state=LS.get(DEMO?'cg_demo3':'cg_data',null)||(DEMO?seedDemo():{items:[],cajas:[],pallets:[],pos:{}});
+if(!state.pos)state.pos={};
+var pending=DEMO?[]:LS.get('cg_pending',[]);
+var session=DEMO?{token:'demo',user:{nombre:'Demo',rol:'admin'}}:LS.get('cg_session',null);
+var net={off:false,err:'',busy:false},fotoCache={},fotoWait={},fotoMiss={};
+function isAdmin(){return !!(session&&session.user&&session.user.rol==='admin');}
+function saveLocal(){LS.set(DEMO?'cg_demo3':'cg_data',state);if(!DEMO)LS.set('cg_pending',pending);}
+function fpos(f){return state.pos[f.id]||{x:f.cx,y:f.cy,rot:f.rot};}
+function newId(){return 'A'+Date.now().toString(36)+Math.floor(Math.random()*46656).toString(36);}
+function itemById(id){id=String(id);for(var i=0;i<state.items.length;i++)if(String(state.items[i].id)===id)return state.items[i];return null;}
+
+function api(action,payload){
+ payload=payload||{};payload.action=action;if(session)payload.token=session.token;
+ if(DEMO){
+  if(action==='fotoSet'){fotoCache[payload.id]=payload.data;return Promise.resolve({ok:true});}
+  var e=new Error('En el modo demostración no hay conexión con la hoja ni con Gemini.');e.code='demo';return Promise.reject(e);
+ }
+ return fetch(API_URL,{method:'POST',body:JSON.stringify(payload)}).then(function(r){return r.json();}).then(function(j){
+  if(!j||!j.ok){var er=new Error((j&&j.error)||'Error del servidor');er.code=(j&&j.code)||'error';throw er;}
+  net.off=false;return j;
+ });
+}
+function applyLocal(o){
+ var it,c,p,k;
+ if(o.t==='itemAdd')state.items.unshift(o.item);
+ else if(o.t==='itemSet'){it=itemById(o.id);if(it)for(k in o.f)it[k]=o.f[k];}
+ else if(o.t==='itemDel')state.items=state.items.filter(function(i){return String(i.id)!==String(o.id);});
+ else if(o.t==='cajaSet'){c=cajaOf(o.id);if(c)c.loc=o.loc;}
+ else if(o.t==='cajaAdd')state.cajas.push({id:o.id,t:o.tipo,loc:''});
+ else if(o.t==='palSet'){p=palById(o.id);if(p){p.x=o.x;p.y=o.y;p.rot=o.rot;}else state.pallets.push({id:o.id,x:o.x,y:o.y,rot:o.rot});}
+ else if(o.t==='palDel'){state.pallets=state.pallets.filter(function(q){return q.id!==o.id;});state.items.forEach(function(i){if(i.loc===o.id)i.loc='';});}
+ else if(o.t==='posSet')state.pos[o.id]={x:o.x,y:o.y,rot:o.rot};
+ else if(o.t==='posDel')delete state.pos[o.id];
+}
+var ftimer=null;
+function mut(o){
+ applyLocal(o);
+ if(!DEMO){
+  var last=pending[pending.length-1];
+  if(!net.busy&&last&&o.t==='itemSet'&&last.t==='itemSet'&&last.id===o.id){for(var k in o.f)last.f[k]=o.f[k];}
+  else pending.push(JSON.parse(JSON.stringify(o)));
+  clearTimeout(ftimer);ftimer=setTimeout(flush,700);
+ }
+ saveLocal();setNet();
+}
+function netFail(e){
+ net.busy=false;
+ if(e&&e.code==='auth'){logout(true);return;}
+ if(e&&e.code){net.err=e.message;}else{net.off=true;net.err='';}
+ setNet();
+}
+function adopt(data,user){
+ state=data;if(!state.pos)state.pos={};
+ if(user&&session){session.user=user;LS.set('cg_session',session);}
+ net.err='';saveLocal();softRender();
+}
+function flush(){
+ if(DEMO||net.busy||!session||!pending.length)return;
+ net.busy=true;var n=pending.length;setNet();
+ api('ops',{ops:pending.slice(0,n)}).then(function(j){
+  pending.splice(0,n);net.busy=false;net.err='';
+  if(pending.length){saveLocal();flush();}else adopt(j.data);
+  setNet();
+ }).catch(netFail);
+}
+function sync(){
+ if(DEMO||!session||net.busy)return;
+ if(pending.length){flush();return;}
+ net.busy=true;setNet();
+ api('sync').then(function(j){net.busy=false;if(!pending.length)adopt(j.data,j.user);setNet();}).catch(netFail);
+}
+function logout(expired){
+ session=null;LS.del('cg_session');pending=[];state={items:[],cajas:[],pallets:[],pos:{}};saveLocal();
+ ui.sheet=null;ui.msg=expired?'La sesión ha caducado. Vuelve a entrar.':'';render();renderSheet(false);
+}
+
+var ui={view:'plano',floor:'main',sel:null,sub:null,edit:false,q:'',filter:'all',fcat:'',moving:null,del:null,addOpen:false,draft:null,sheet:null,origin:null,itemId:null,ai:null,aiIds:null,msg:'',busy:''};
+var VIEWS=['plano','articulos','ubicaciones'];
+function readHash(){var h=(location.hash||'').replace('#','');if(VIEWS.indexOf(h)>=0)ui.view=h;}
+readHash();
+
+/* ---------- Índice de ubicaciones ---------- */
+var idx={};
+function buildIdx(){
+ idx={};
+ FURN.forEach(function(f){f.subs.forEach(function(s){idx[f.id+'-'+s.c]={code:f.id+'-'+s.c,name:f.name+' · '+s.n,furn:f.id,floor:f.floor,zone:f.zone};});});
+ state.pallets.forEach(function(p){idx[p.id]={code:p.id,name:'Palet en suelo '+p.id.slice(-2),furn:p.id,floor:'sot',zone:'Foso'};});
+}
+function cajaOf(code){for(var i=0;i<state.cajas.length;i++)if(state.cajas[i].id===code)return state.cajas[i];return null;}
+function resolve(code){var c=cajaOf(code),via=null;if(c){via=c.id;code=c.loc;}var L=idx[code];if(!L)return via?{via:via,code:'',furn:null}:null;return {code:L.code,name:L.name,furn:L.furn,floor:L.floor,zone:L.zone,via:via};}
+function locItems(code){return state.items.filter(function(it){if(it.loc===code)return true;var c=cajaOf(it.loc);return !!(c&&c.loc===code);});}
+function furnItems(fid){return state.items.filter(function(it){var r=resolve(it.loc);return !!(r&&r.furn===fid);});}
+function furnById(id){for(var i=0;i<FURN.length;i++)if(FURN[i].id===id)return FURN[i];return null;}
+function palById(id){for(var i=0;i<state.pallets.length;i++)if(state.pallets[i].id===id)return state.pallets[i];return null;}
+function locOptions(sel,withCajas){
+ var h='<option value="">Sin ubicar</option>';
+ FURN.forEach(function(f){h+='<optgroup label="'+esc(f.zone+' · '+f.name)+'">';f.subs.forEach(function(s){var c=f.id+'-'+s.c;h+='<option value="'+c+'"'+(c===sel?' selected':'')+'>'+c+' · '+esc(s.n)+'</option>';});h+='</optgroup>';});
+ h+='<optgroup label="Foso · Palets en suelo">';state.pallets.forEach(function(p){h+='<option value="'+esc(p.id)+'"'+(p.id===sel?' selected':'')+'>'+esc(p.id)+'</option>';});h+='</optgroup>';
+ if(withCajas){h+='<optgroup label="Dentro de una caja u organizador">';state.cajas.forEach(function(c){h+='<option value="'+esc(c.id)+'"'+(c.id===sel?' selected':'')+'>'+esc(c.id)+' · '+esc(c.t)+'</option>';});h+='</optgroup>';}
+ return h;
+}
+function catOptions(sel,first){return '<option value="">'+first+'</option>'+CATS.map(function(c){return '<option'+(c===sel?' selected':'')+'>'+esc(c)+'</option>';}).join('');}
+
+/* ---------- Plano ---------- */
+var OUT_MAIN='0,4.45 9.94,0 9.94,19.46 2.18,19.46 2.18,16.27 1.34,16.27 1.34,11.85 .15,11.85 .15,9.31 0,9.31';
+var OUT_SOT='0,4.45 9.94,0 9.94,19.46 2.18,19.46 2.18,16.27 1.34,16.27 1.34,11.85 0,11.85';
+var LIVING='.15,9.46 5.67,9.46 5.67,19.46 2.18,19.46 2.18,16.27 1.34,16.27 1.34,11.85 .15,11.85';
+var DEFS='<defs><pattern id="pw" width="1.2" height=".24" patternUnits="userSpaceOnUse"><rect width="1.2" height=".24" fill="#a8672f"/><path d="M0 .24H1.2M.5 0V.24" stroke="#8a5223" stroke-width=".025"/></pattern>'+
+ '<pattern id="pt" width=".3" height=".3" patternUnits="userSpaceOnUse"><rect width=".3" height=".3" fill="#2f8a3d"/><circle cx=".07" cy=".08" r=".035" fill="#277536"/><circle cx=".21" cy=".2" r=".035" fill="#3a9c49"/></pattern>'+
+ '<pattern id="pc" width=".9" height=".9" patternUnits="userSpaceOnUse"><rect width=".9" height=".9" fill="#5a585f"/><circle cx=".2" cy=".3" r=".05" fill="#615f67"/><circle cx=".65" cy=".7" r=".04" fill="#54525a"/></pattern>'+
+ '<filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx=".06" dy=".09" stdDeviation=".07" flood-color="#000" flood-opacity=".55"/></filter></defs>';
+function shape(id,cls,cx,cy,w,h,rot,fill,inLabel,slats){
+ var x=cx-w/2,y=cy-h/2,s='<g class="furn '+cls+(ui.sel===id?' sel':'')+'" data-loc="'+id+'" transform="rotate('+rot+' '+cx+' '+cy+')" filter="url(#sh)">'+
+  '<rect class="hit" x="'+(x-.2)+'" y="'+(y-.2)+'" width="'+(w+.4)+'" height="'+(h+.4)+'"/>'+
+  '<rect class="body" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx=".04" fill="'+fill+'" stroke="rgba(255,255,255,.55)" stroke-width=".025"/>';
+ if(slats)for(var i=1;i<slats;i++)s+='<line x1="'+(x+w*i/slats)+'" y1="'+(y+.04)+'" x2="'+(x+w*i/slats)+'" y2="'+(y+h-.04)+'" stroke="rgba(0,0,0,.35)" stroke-width=".04"/>';
+ s+='</g>';
+ if(inLabel)s+='<text class="fl in" x="'+cx+'" y="'+(cy+.1)+'">'+inLabel+'</text>';
+ return s;
+}
+function planSVG(){
+ var s=DEFS;
+ if(ui.floor==='main'){
+  s+='<polygon class="wall" points="'+OUT_MAIN+'" fill="url(#pc)"/><polygon points="'+LIVING+'" fill="url(#pw)"/><polygon class="wall2" points="'+OUT_MAIN+'"/>';
+  s+='<path class="inwall" d="M.15 9.46H5.67M5.67 9.31V14.3M5.67 15V19.46M1.34 9.46V11.85"/>';
+  s+='<rect class="stairs" x="1.5" y="8" width="2.2" height=".9"/>';for(var i=1;i<8;i++)s+='<line x1="'+(1.5+i*.275)+'" y1="8" x2="'+(1.5+i*.275)+'" y2="8.9" stroke="#f1eef3" stroke-width=".02"/>';
+  s+='<text class="fl" x="2.6" y="7.8" text-anchor="middle">Escalera al foso</text>';
+  s+='<text class="zl" x="6.4" y="6.2">TALLER</text><text class="zl" x="7.85" y="13.2">TALLER</text><text class="zl" x="3.65" y="15.4">LIVING</text>';
+ }else{
+  s+='<polygon class="wall" points="'+OUT_SOT+'" fill="url(#pt)"/>';
+  s+='<rect class="stairs" x="1.85" y="7.97" width="3.2" height="1.35"/>';for(var j=1;j<10;j++)s+='<line x1="'+(1.85+j*.32)+'" y1="7.97" x2="'+(1.85+j*.32)+'" y2="9.32" stroke="#f1eef3" stroke-width=".02"/>';
+  s+='<rect x="5.35" y="6.9" width=".6" height=".6" fill="#9a989e" stroke="#f1eef3" stroke-width=".03"/><text class="zl" x="5.4" y="16.6">FOSO</text>';
+ }
+ FURN.forEach(function(f){
+  if(f.floor!==ui.floor)return;
+  var short=f.id.split('-').pop();
+  var q=fpos(f);s+=shape(f.id,f.rack?'rack':'cab',q.x,q.y,f.w,f.h,q.rot,f.pc,f.lab?null:short,f.rack?5:0);
+  if(f.lab)s+='<text class="fl" x="'+(f.lab[0]-f.cx+q.x)+'" y="'+(f.lab[1]-f.cy+q.y)+'" text-anchor="'+f.lab[2]+'">'+short+'</text>';
+ });
+ if(ui.floor==='sot')state.pallets.forEach(function(p){s+=shape(p.id,'pal',p.x,p.y,1.2,.8,p.rot,RED,p.id.slice(-2),5);});
+ return s;
+}
+/* ---------- Vista 3D del mueble ---------- */
+function shade(hex,k){var n=parseInt(hex.slice(1),16),c=[n>>16,n>>8&255,n&255].map(function(v){return Math.max(0,Math.min(255,Math.round(k>1?v+(255-v)*(k-1):v*k)));});return 'rgb('+c.join(',')+')';}
+function stageSVG(id){
+ var ev=evOf(id),W=ev.W,H=ev.H,maxd=Math.max.apply(null,ev.blocks.map(function(b){return b.d;}));
+ var m=Math.max(.14,W*.07),fl=ev.float||0,ox=m,oy=m+maxd*.35,floorY=oy+H+fl,hor=floorY-maxd*.35-.01;
+ var vw=W+maxd*.5+2*m,vh=floorY+Math.max(.1,W*.08),fs=W/22,sw=W*.005,s='';
+ var wall=ev.stage==='foso'?'#55535a':'#eceaee',floor=ev.stage==='taller'?'#8d8b91':ev.stage==='living'?'#b0703a':'#3a9447';
+ s+='<rect x="0" y="0" width="'+vw+'" height="'+vh+'" fill="'+wall+'"/>';
+ if(ev.stage==='taller'&&hor-.7>0)s+='<rect x="0" y="'+(hor-.62)+'" width="'+vw+'" height=".62" fill="#2a292e"/><rect x="0" y="'+(hor-.7)+'" width="'+vw+'" height=".08" fill="#ff2e9a"/>';
+ s+='<rect x="0" y="'+hor+'" width="'+vw+'" height="'+(vh-hor)+'" fill="'+floor+'"/>';
+ s+='<ellipse cx="'+(ox+W/2+maxd*.2)+'" cy="'+(floorY-maxd*.14)+'" rx="'+(W/2+maxd*.32)+'" ry="'+Math.max(.03,maxd*.22)+'" fill="rgba(0,0,0,.32)"/>';
+ var edge=ev.light?'#b4b1aa':'#000';
+ ev.blocks.forEach(function(b,i){
+  var X=ox+b.x,Y=oy+b.y,dx=b.d*.5,dy=b.d*.35;
+  s+='<g class="bx" style="animation-delay:'+(i*60)+'ms" stroke="'+edge+'" stroke-width="'+sw+'" stroke-linejoin="round">'+
+   '<polygon points="'+X+','+Y+' '+(X+b.w)+','+Y+' '+(X+b.w+dx)+','+(Y-dy)+' '+(X+dx)+','+(Y-dy)+'" fill="'+shade(b.f,ev.light||b.f===OAK?1.0:1.35)+'"/>'+
+   '<polygon points="'+(X+b.w)+','+Y+' '+(X+b.w+dx)+','+(Y-dy)+' '+(X+b.w+dx)+','+(Y+b.h-dy)+' '+(X+b.w)+','+(Y+b.h)+'" fill="'+shade(b.f,.62)+'"/>'+
+   '<rect x="'+X+'" y="'+Y+'" width="'+b.w+'" height="'+b.h+'" fill="'+shade(b.f,ev.light?.96:1)+'"/>';
+  if(b.pal)s+='<rect x="'+(X+b.w*.14)+'" y="'+(Y+b.h*.35)+'" width="'+(b.w*.28)+'" height="'+(b.h*.65)+'" fill="'+shade(b.f,.3)+'" stroke="none"/><rect x="'+(X+b.w*.58)+'" y="'+(Y+b.h*.35)+'" width="'+(b.w*.28)+'" height="'+(b.h*.65)+'" fill="'+shade(b.f,.3)+'" stroke="none"/>';
+  s+='</g>';
+ });
+ var front=ev.front||(ev.light?'#fbfaf8':'#2b2b31'),metal=ev.light?'#8f8f94':'#cfcfd6';
+ ev.cells.forEach(function(c,i){
+  var code=fullCode(id,c),on=ui.sub===code,n=locItems(code).length,lab=c.l!==undefined?c.l:c.c,dark=false,g='',geo,cx,cy,bw,bh;
+  if(c.k==='face'){
+   var b=ev.blocks[0],X0=ox+b.x,Y0=oy+b.y,dx=b.d*.5,dy=b.d*.35;
+   geo='points="'+X0+','+Y0+' '+(X0+b.w)+','+Y0+' '+(X0+b.w+dx)+','+(Y0-dy)+' '+(X0+dx)+','+(Y0-dy)+'"';
+   g+='<polygon class="ov" '+geo+' stroke-width="'+(sw*3)+'"/>';cx=X0+b.w/2+dx/2;cy=Y0-dy/2;bw=b.w;bh=dy;dark=true;
+  }else{
+   var X=ox+c.x,Y=oy+c.y,w=c.w,h=c.h,r='x="'+X+'" y="'+Y+'" width="'+w+'" height="'+h+'"',hy=(c.y+h/2<H/2)?Y+h-Math.min(.07,h*.22):Y+Math.min(.07,h*.22),hl=Math.min(.14,w*.4);
+   cx=X+w/2;cy=Y+h/2;bw=w;bh=h;
+   if(c.k==='open'){g+='<rect '+r+' fill="'+(ev.light?'#cfccc5':'#070709')+'"/><rect x="'+X+'" y="'+Y+'" width="'+w+'" height="'+(h*.3)+'" fill="rgba(0,0,0,'+(ev.light?.12:.5)+')"/><line x1="'+X+'" y1="'+(Y+h)+'" x2="'+(X+w)+'" y2="'+(Y+h)+'" stroke="'+(ev.light?'#fff':'#4a4a52')+'" stroke-width="'+(sw*2.4)+'"/>';dark=!!ev.light;}
+   else if(c.k==='door'){g+='<rect '+r+' fill="'+front+'" stroke="'+edge+'" stroke-width="'+sw+'"/><line x1="'+(cx-hl/2)+'" y1="'+hy+'" x2="'+(cx+hl/2)+'" y2="'+hy+'" stroke="'+metal+'" stroke-width="'+(sw*3)+'" stroke-linecap="round"/>';dark=!!ev.light;}
+   else if(c.k==='drawer'){g+='<rect '+r+' fill="'+(c.f||front)+'" stroke="'+edge+'" stroke-width="'+sw+'"/><line x1="'+(X+w*.2)+'" y1="'+(Y+h*.3)+'" x2="'+(X+w*.8)+'" y2="'+(Y+h*.3)+'" stroke="'+metal+'" stroke-width="'+(sw*3)+'" stroke-linecap="round"/>';dark=!!ev.light&&!c.f;}
+   else if(c.k==='peg'){g+='<rect '+r+' fill="#17171a"/><rect '+r+' fill="url(#peg)"/>';}
+   else if(c.k==='wood'){g+='<rect '+r+' fill="'+OAK+'" stroke="#8a5a2a" stroke-width="'+sw+'"/>';dark=true;}
+   else if(c.k==='fridge'){g+='<rect '+r+' rx=".03" fill="#08080a" stroke="#c8794f" stroke-width="'+(sw*1.6)+'"/><line x1="'+(X+w*.18)+'" y1="'+hy+'" x2="'+(X+w*.5)+'" y2="'+hy+'" stroke="#c8794f" stroke-width="'+(sw*4.5)+'" stroke-linecap="round"/>';}
+   else if(c.k==='oven'){g+='<rect '+r+' fill="#0b0b0d" stroke="#000" stroke-width="'+sw+'"/><rect x="'+(X+w*.14)+'" y="'+(Y+h*.36)+'" width="'+(w*.72)+'" height="'+(h*.5)+'" rx=".03" fill="#1d1d22" stroke="#d6b25a" stroke-width="'+sw+'"/><line x1="'+(X+w*.1)+'" y1="'+(Y+h*.27)+'" x2="'+(X+w*.9)+'" y2="'+(Y+h*.27)+'" stroke="#d6b25a" stroke-width="'+(sw*2.5)+'" stroke-linecap="round"/>';for(var k=0;k<5;k++)g+='<circle cx="'+(X+w*(.18+k*.16))+'" cy="'+(Y+h*.1)+'" r="'+(w*.04)+'" fill="#d6b25a"/>';}
+   else if(c.k==='air'){g+='<rect '+r+' rx=".02" fill="rgba(255,255,255,.1)" stroke="#fff" stroke-width="'+(sw*1.6)+'" stroke-dasharray="'+(sw*8)+' '+(sw*6)+'"/>';}
+   g+='<rect class="ov" '+r+' stroke-width="'+(sw*3)+'"/>';
+  }
+  var dr=c.k==='drawer';if(lab&&bw>fs*lab.length*.64&&(bh>fs*(dr?1.9:1.05)||c.k==='face'))g+='<text class="cl" x="'+cx+'" y="'+(cy+fs*.34+(dr?bh*.16:0))+'" font-size="'+fs+'" fill="'+(dark?'#1b1a1e':'#fff')+'">'+lab+'</text>';
+  if(n){var rr=fs*.62,bx=cx+bw/2-rr*1.2,by=cy-bh/2+Math.min(bh/2,rr*1.2);g+='<circle cx="'+bx+'" cy="'+by+'" r="'+rr+'" fill="#ff2e9a" stroke="#fff" stroke-width="'+sw+'"/><text class="cl" x="'+bx+'" y="'+(by+fs*.3)+'" font-size="'+(fs*.85)+'" fill="#1a0610">'+n+'</text>';}
+  s+='<g class="cell'+(on?' on':'')+'" data-act="cell" data-code="'+code+'" style="animation-delay:'+(250+i*16)+'ms"><title>'+esc(c.n)+'</title>'+g+'</g>';
+ });
+ return '<svg class="stage" viewBox="0 0 '+vw+' '+vh+'" role="img" aria-label="Vista 3D"><defs><pattern id="peg" width="'+(W*.012)+'" height="'+(W*.012)+'" patternUnits="userSpaceOnUse"><circle cx="'+(W*.006)+'" cy="'+(W*.006)+'" r="'+(W*.0018)+'" fill="#5c5c66"/></pattern></defs>'+s+'</svg>';
+}
+/* ---------- Plano: vista ---------- */
+function locList(code){
+ var its=locItems(code),cj=state.cajas.filter(function(c){return c.loc===code;}),h='';
+ if(cj.length)h+='<div class="subs">'+cj.map(function(c){return '<span class="code" title="'+esc(c.t)+'">'+esc(c.id)+'</span>';}).join('')+'</div>';
+ if(its.length)h+='<ul class="items">'+its.map(itemHTML).join('')+'</ul>';else h+='<p class="empty-msg">Aquí no hay artículos todavía.</p>';
+ return h+'<div><button class="btn pri" data-act="addhere" data-code="'+esc(code)+'">Añadir artículo aquí</button></div>';
+}
+function viewPlano(){
+ var sot=ui.floor==='sot';
+ var h='<div class="seg"><button data-act="floor" data-f="main" aria-pressed="'+(!sot)+'">Planta principal</button><button data-act="floor" data-f="sot" aria-pressed="'+sot+'">Sótano (foso)</button></div>';
+ h+='<div class="planwrap"><svg id="plan" class="'+(ui.edit?'edit':'')+'" viewBox="-.4 -.4 10.75 20.3" role="img" aria-label="Plano a escala">'+planSVG()+'</svg></div>';
+ if(isAdmin())h+='<div class="row"><button class="btn sm" data-act="edit" aria-pressed="'+ui.edit+'">'+(ui.edit?'Terminar de mover':'Recolocar muebles'+(sot?' y palets':''))+'</button>'+(ui.edit&&sot?'<button class="btn sm" data-act="addpal">Añadir palet</button>':'')+'</div>';
+ if(ui.edit){
+  var p=palById(ui.sel),ff=furnById(ui.sel);
+  h+='<div class="panel">';
+  if(p)h+='<div class="row" style="justify-content:space-between"><h2>Palet '+p.id.slice(-2)+'</h2><span class="code">'+p.id+'</span></div><div class="row"><button class="btn sm" data-act="rot">Girar 90°</button><button class="btn sm" data-act="delpal">'+(ui.del===p.id?'¿Seguro? Toca otra vez':'Quitar palet')+'</button></div>';
+  else if(ff)h+='<div class="row" style="justify-content:space-between"><h2>'+esc(ff.name)+'</h2><span class="code">'+ff.id+'</span></div><div class="row"><button class="btn sm" data-act="rot">Girar 90°</button><button class="btn sm" data-act="resetpos">Volver a su sitio original</button></div><p class="empty-msg">Lo que hay dentro se mueve con el mueble.</p>';
+  else h+='<p class="empty-msg">Arrastra cualquier mueble'+(sot?' o palet':'')+' para recolocarlo. Tócalo para girarlo.</p>';
+  h+='</div>';
+ }else{
+  h+='<p class="empty-msg">Toca un mueble, una estantería o un palet para abrirlo en 3D.</p>';
+  h+='<div class="scrollx">'+FURN.filter(function(f){return f.floor===ui.floor;}).map(function(f){return '<button class="chip" data-act="sel" data-id="'+f.id+'">'+esc(f.name)+'</button>';}).join('')+'</div>';
+ }
+ return h;
+}
+
+/* ---------- Paneles: mueble, artículo, foto con IA ---------- */
+function cardOpen(label,anim){
+ var left=Math.max(8,(window.innerWidth-640)/2),o=ui.origin||[left+160,260];
+ return '<div class="backdrop" data-act="close"></div><section class="card'+(anim?' anim':'')+'" role="dialog" aria-label="'+esc(label)+'" style="transform-origin:'+(o[0]-left)+'px '+(o[1]-44)+'px">';
+}
+function furnSheetHTML(anim){
+ var id=ui.sel,f=furnById(id),ev=evOf(id),name=f?f.name:'Palet en suelo '+id.slice(-2),n=furnItems(id).length;
+ var h=cardOpen(name,anim);
+ h+='<div class="hd"><div><h2>'+esc(name)+'</h2><div class="row" style="margin-top:6px"><span class="code">'+id+'</span><span class="empty-msg">'+(f?f.zone:'Foso')+' · '+n+' artículo'+(n===1?'':'s')+'</span></div></div><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
+ h+=stageSVG(id);
+ if(ev.cells.length>1)h+='<div class="scrollx">'+ev.cells.map(function(c){var code=fullCode(id,c),k=locItems(code).length;return '<button class="chip" data-act="cell" data-code="'+code+'" aria-pressed="'+(ui.sub===code)+'" title="'+esc(c.n)+'">'+c.c+(k?'<small>'+k+'</small>':'')+'</button>';}).join('')+'</div>';
+ if(ui.sub&&idx[ui.sub]&&idx[ui.sub].furn===id){var nm=idx[ui.sub].name.split(' · ')[1];h+='<div class="row">'+(nm?'<strong>'+esc(nm)+'</strong>':'')+'<span class="code">'+ui.sub+'</span></div>'+locList(ui.sub);}
+ else h+='<p class="empty-msg">Toca un hueco del mueble para ver qué hay dentro y añadir cosas. El número rosa indica cuántos artículos hay.</p>';
+ return h+'</section>';
+}
+function fld(label,inner,wide){return '<label class="f'+(wide?' w':'')+'">'+label+inner+'</label>';}
+function itemSheetHTML(anim){
+ var it=itemById(ui.itemId);if(!it)return '';
+ var src=fotoCache[it.id]||'',h=cardOpen(it.name,anim);
+ var v=ui.edraft&&ui.edraft.id===it.id?ui.edraft:{name:it.name,qty:it.qty,min:it.min||'',loc:it.loc,st:it.st,cat:it.cat,tags:it.tags,notes:it.notes,price:it.price,date:it.date,prov:it.prov};
+ h+='<div class="hd"><h2>Editar artículo</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
+ if(it.foto||src)h+='<img class="foto-big" alt="Foto del artículo" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>';
+ h+='<div class="grid2">'+
+  fld('Nombre','<input type="text" id="e-name" value="'+esc(v.name)+'">',1)+
+  fld('Cantidad','<input type="number" id="e-qty" min="0" inputmode="numeric" value="'+esc(v.qty)+'">')+
+  fld('Avisar si quedan','<input type="number" id="e-min" min="0" inputmode="numeric" value="'+esc(v.min)+'" placeholder="Sin aviso">')+
+  fld('Ubicación','<select id="e-loc">'+locOptions(v.loc,true)+'</select>',1)+
+  fld('Estado','<select id="e-st">'+['ok','low','empty'].map(function(s){return '<option value="'+s+'"'+(v.st===s?' selected':'')+'>'+ST[s]+'</option>';}).join('')+'</select>')+
+  fld('Categoría','<select id="e-cat">'+catOptions(v.cat,'Sin categoría')+'</select>')+
+  fld('Otras palabras para encontrarlo','<input type="text" id="e-tags" value="'+esc(v.tags)+'">',1)+
+  fld('Notas','<textarea id="e-notes" rows="2">'+esc(v.notes)+'</textarea>',1)+
+  fld('Precio','<input type="text" id="e-price" inputmode="decimal" value="'+esc(v.price)+'">')+
+  fld('Fecha de compra','<input type="text" id="e-date" placeholder="AAAA-MM-DD" value="'+esc(v.date)+'">')+
+  fld('Proveedor','<input type="text" id="e-prov" value="'+esc(v.prov)+'">',1)+
+  fld(it.foto?'Cambiar la foto':'Añadir una foto','<input type="file" id="e-foto" accept="image/*" data-chg="foto">',1)+'</div>';
+ if(ui.busy)h+='<p class="empty-msg">'+esc(ui.busy)+'</p>';
+ if(ui.msg)h+='<p class="note">'+esc(ui.msg)+'</p>';
+ h+='<div class="row"><button class="btn pri" data-act="saveitem">Guardar cambios</button>'+(it.loc?'<button class="btn" data-act="goto" data-id="'+esc(it.id)+'">Ver en el plano</button>':'')+(isAdmin()?'<button class="btn" data-act="del" data-id="'+esc(it.id)+'">'+(ui.del===it.id?'¿Seguro? Toca otra vez':'Borrar')+'</button>':'')+'</div>';
+ return h+'</section>';
+}
+function aiSheetHTML(anim){
+ var a=ui.ai,h=cardOpen('Añadir con foto',anim);
+ h+='<div class="hd"><h2>Añadir con foto</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
+ h+='<div class="seg"><button data-act="aimodo" data-m="herramientas" aria-pressed="'+(a.modo==='herramientas')+'">Herramientas o piezas</button><button data-act="aimodo" data-m="compra" aria-pressed="'+(a.modo==='compra')+'">Ticket o captura de compra</button></div>';
+ h+='<p class="empty-msg">'+(a.modo==='compra'?'Sube el ticket, la factura o el pantallazo del pedido y saco cada producto con su cantidad y precio.':'Haz una foto a la bandeja o al cajón con las herramientas separadas y bien iluminadas. La medida solo sale si se lee en la foto.')+'</p>';
+ h+=fld('Foto','<input type="file" id="ai-file" accept="image/*" data-chg="aifile"'+(a.busy?' disabled':'')+'>');
+ if(DEMO)h+='<p class="note">En el modo demostración no hay conexión con Gemini. Funciona en la versión conectada a la hoja.</p>';
+ if(a.busy)h+='<p class="empty-msg">Analizando la foto con Gemini, tarda unos segundos…</p>';
+ if(a.err)h+='<p class="note">'+esc(a.err)+'</p>';
+ if(a.items){
+  if(!a.items.length)h+='<p class="empty-msg">No he reconocido ningún artículo en esa foto. Prueba con más luz o más cerca.</p>';
+  else{
+   h+='<p class="empty-msg">Revisa la lista, corrige lo que haga falta y desmarca lo que no quieras guardar.</p><div class="rev">';
+   a.items.forEach(function(x,i){h+='<input type="checkbox" id="ai-c-'+i+'" checked aria-label="Guardar este artículo"><input type="text" id="ai-n-'+i+'" value="'+esc(x.name)+'" aria-label="Nombre"'+(x.dudoso?' style="border-color:var(--warn)"':'')+'><input type="number" id="ai-q-'+i+'" min="0" value="'+x.qty+'" inputmode="numeric" aria-label="Cantidad">';});
+   h+='</div>';
+   if(a.items.some(function(x){return x.dudoso;}))h+='<p class="empty-msg">Los marcados en naranja son dudosos: comprueba medida o modelo.</p>';
+   h+=fld('Guardar todos en','<select id="ai-loc">'+locOptions(a.loc,true)+'</select>')+'<div><button class="btn pri" data-act="aisave">Guardar los marcados</button></div>';
+  }
+ }
+ return h+'</section>';
+}
+var sheet=document.getElementById('sheet');
+function grabEdit(){var n=document.getElementById('e-name');if(!n||!ui.itemId)return;ui.edraft={id:ui.itemId,name:n.value,qty:val('e-qty'),min:val('e-min'),loc:val('e-loc'),st:val('e-st'),cat:val('e-cat'),tags:val('e-tags'),notes:val('e-notes'),price:val('e-price'),date:val('e-date'),prov:val('e-prov')};}
+function renderSheet(anim){
+ var html='';
+ if(ui.sheet==='item'&&!anim)grabEdit();else ui.edraft=null;
+ if(ui.sheet==='furn'&&ui.sel&&(furnById(ui.sel)||palById(ui.sel)))html=furnSheetHTML(anim);
+ else if(ui.sheet==='item')html=itemSheetHTML(anim);
+ else if(ui.sheet==='ai'&&ui.ai)html=aiSheetHTML(anim);
+ if(!html){ui.sheet=null;sheet.hidden=true;sheet.innerHTML='';return;}
+ var old=sheet.querySelector('.card'),st=old&&!anim?old.scrollTop:0;
+ sheet.hidden=false;sheet.innerHTML=html;
+ var c=sheet.querySelector('.card');if(c)c.scrollTop=st;
+ loadFotos();
+}
+function openSheet(id,x,y,sub){ui.sel=id;ui.sub=sub||(palById(id)?id:null);ui.sheet='furn';ui.origin=[x,y];ui.del=null;render();renderSheet(true);}
+function closeSheet(){ui.sheet=null;ui.msg='';ui.busy='';renderSheet(false);}
+
+/* ---------- Artículos ---------- */
+var ST={ok:'Hay',low:'Queda poco',empty:'Vacío'};
+function itemHTML(it){
+ var r=resolve(it.loc),w,src=fotoCache[it.id]||'';
+ if(!it.loc)w='<span>Sin ubicar</span>';
+ else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
+ else w='<span class="code">'+esc(it.loc)+'</span><span>'+(cajaOf(it.loc)?'caja sin colocar todavía':'ubicación que ya no existe')+'</span>';
+ var h='<li class="item '+it.st+'"><div class="it-top">'+(it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':'')+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
+  (it.cat||it.min?'<div class="where"><span>'+esc(it.cat||'')+(it.cat&&it.min?' · ':'')+(it.min?'avisa con '+it.min+' o menos':'')+'</span></div>':'')+'</div></div>';
+ h+='<div class="row"><span class="qty"><button data-act="dec" data-id="'+esc(it.id)+'" aria-label="Quitar uno">−</button><span>'+it.qty+'</span><button data-act="inc" data-id="'+esc(it.id)+'" aria-label="Añadir uno">+</button></span>';
+ h+='<button class="pill '+it.st+'" data-act="st" data-id="'+esc(it.id)+'" title="Cambiar estado">'+ST[it.st]+'</button>';
+ h+='<button class="btn sm" data-act="move" data-id="'+esc(it.id)+'">Mover</button><button class="btn sm" data-act="edititem" data-id="'+esc(it.id)+'">Editar</button></div>';
+ if(ui.moving===it.id)h+='<select data-chg="moveto" data-id="'+esc(it.id)+'" aria-label="Nueva ubicación">'+locOptions(it.loc,true)+'</select>';
+ return h+'</li>';
+}
+function matches(it){
+ if(ui.filter==='buy'&&it.st==='ok')return false;
+ if(ui.filter==='noloc'&&it.loc)return false;
+ if(ui.fcat&&it.cat!==ui.fcat)return false;
+ if(ui.aiIds)return ui.aiIds.indexOf(String(it.id))>=0;
+ var q=norm(ui.q).trim();if(!q)return true;
+ var r=resolve(it.loc),hay=norm(it.name+' '+it.tags+' '+it.loc+' '+it.cat+' '+it.notes+' '+it.prov+' '+(r&&r.name?r.name+' '+r.code:''));
+ return q.split(/\s+/).every(function(t){return hay.indexOf(t)>=0;});
+}
+function draft(){return ui.draft||(ui.draft={name:'',loc:'',qty:'1',cat:'',min:'',tags:''});}
+function grabDraft(){var n=document.getElementById('f-name');if(!n)return;var v=function(id){var e=document.getElementById(id);return e?e.value:'';};ui.draft={name:n.value,loc:v('f-loc'),qty:v('f-qty'),cat:v('f-cat'),min:v('f-min'),tags:v('f-tags')};}
+function viewArticulos(){
+ var d=draft(),list=state.items.filter(matches);
+ if(ui.aiIds)list.sort(function(a,b){return ui.aiIds.indexOf(String(a.id))-ui.aiIds.indexOf(String(b.id));});
+ var h='<div class="row"><button class="btn pri" data-act="toggleadd">'+(ui.addOpen?'Cerrar alta':'Añadir artículo')+'</button><button class="btn" data-act="ai">Añadir con foto</button></div>';
+ if(ui.addOpen){
+  h+='<form class="panel" id="addform"><div class="grid2">'+
+   fld('Nombre','<input type="text" id="f-name" required placeholder="Ej.: Pastillas de freno delanteras" value="'+esc(d.name)+'">',1)+
+   fld('Ubicación','<select id="f-loc">'+locOptions(d.loc,true)+'</select>',1)+
+   fld('Cantidad','<input type="number" id="f-qty" min="0" inputmode="numeric" value="'+esc(d.qty)+'">')+
+   fld('Avisar si quedan','<input type="number" id="f-min" min="0" inputmode="numeric" placeholder="Sin aviso" value="'+esc(d.min)+'">')+
+   fld('Categoría','<select id="f-cat">'+catOptions(d.cat,DEMO?'Sin categoría':'La elige Gemini')+'</select>',1)+
+   fld('Otras palabras para encontrarlo','<input type="text" id="f-tags" placeholder="'+(DEMO?'Ej.: freno, brembo':'Vacío: las pone Gemini')+'" value="'+esc(d.tags)+'">',1)+'</div>'+
+   (ui.busy?'<p class="empty-msg">'+esc(ui.busy)+'</p>':'')+
+   '<div class="row"><button class="btn pri" type="submit">Guardar</button><button class="btn" type="button" data-act="donde">¿Dónde lo pongo?</button></div></form>';
+ }
+ if(ui.msg)h+='<p class="note">'+esc(ui.msg)+'</p>';
+ h+='<div class="seg">'+[['all','Todos'],['buy','Lista de la compra'],['noloc','Sin ubicar']].map(function(f){return '<button data-act="filter" data-f="'+f[0]+'" aria-pressed="'+(ui.filter===f[0])+'">'+f[1]+'</button>';}).join('')+'</div>';
+ h+='<select id="fcat" data-chg="fcat" aria-label="Filtrar por categoría">'+catOptions(ui.fcat,'Todas las categorías')+'</select>';
+ if(ui.aiIds)h+='<p class="empty-msg">Resultados que Gemini ve relacionados con «'+esc(ui.q)+'». <button class="link" data-act="aiclear">Quitar</button></p>';
+ h+=list.length?'<p class="empty-msg">'+list.length+' artículo'+(list.length===1?'':'s')+(list.length>150?', se muestran los 150 primeros':'')+'</p><ul class="items">'+list.slice(0,150).map(itemHTML).join('')+'</ul>':'<p class="empty-msg">'+(state.items.length?'Nada coincide con esa búsqueda.':'Todavía no hay artículos. Empieza por «Añadir artículo» o «Añadir con foto».')+'</p>';
+ if(ui.q.trim()&&!ui.aiIds&&state.items.length)h+='<div><button class="btn" data-act="aisearch">'+(ui.busy==='buscando'?'Buscando…':'Buscar parecidos con IA')+'</button></div>';
+ return h;
+}
+
+/* ---------- Ubicaciones, cajas y etiquetas ---------- */
+function viewUbic(){
+ var h='';
+ if(ui.msg)h+='<p class="note">'+esc(ui.msg)+'</p>';
+ h+='<div class="panel"><h2>Etiquetas QR</h2><p class="empty-msg">Imprime las etiquetas y pégalas en cada hueco o caja. Al escanear una con la cámara del móvil se abre directamente ese sitio.</p>'+
+  '<select id="qr-sel" aria-label="Qué etiquetas imprimir"><option value="*">Todos los muebles</option>'+FURN.map(function(f){return '<option value="'+f.id+'">'+esc(f.name)+'</option>';}).join('')+'<option value="cajas">Cajas y organizadores</option><option value="palets">Palets en suelo</option></select>'+
+  '<div class="row"><button class="btn pri" data-act="qr">Imprimir etiquetas</button>'+(isAdmin()&&!DEMO?'<button class="btn" data-act="ubicdump">Guardar la lista en la hoja</button>':'')+'</div></div>';
+ ['Taller','Living','Foso'].forEach(function(z){
+  h+='<div class="sect"><h2>'+z+'</h2>';
+  FURN.filter(function(f){return f.zone===z;}).forEach(function(f){
+   h+='<div class="fcard"><div class="hd"><strong>'+esc(f.name)+'</strong><span class="code">'+f.id+'</span></div><div class="subs">'+f.subs.map(function(s){return '<span class="code" title="'+esc(s.n)+'">'+s.c+'</span>';}).join('')+'</div></div>';
+  });
+  if(z==='Foso')h+='<div class="fcard"><div class="hd"><strong>Palets en suelo</strong><span class="code">'+state.pallets.length+' palets</span></div><span class="empty-msg">Se mueven, añaden y quitan desde el plano del sótano.</span></div>';
+  h+='</div>';
+ });
+ h+='<div class="sect"><h2>Cajas y organizadores</h2><p class="note">Cada caja lleva su código. Dile en qué hueco está y todo lo que tenga dentro queda localizado.</p>';
+ h+='<div class="row"><select id="cj-tipo" aria-label="Tipo de caja" style="flex:1;width:auto">'+CAJA_TIPOS.map(function(t){return '<option value="'+t[0]+'">'+t[1]+'</option>';}).join('')+'</select><button class="btn" data-act="cajaadd">Añadir caja</button></div>';
+ h+='<div class="fcard"><div class="cajas">';
+ state.cajas.forEach(function(c){h+='<span><span class="code">'+esc(c.id)+'</span> '+esc(c.t)+'</span><select data-chg="cajaloc" data-id="'+esc(c.id)+'" aria-label="Ubicación de '+esc(c.id)+'">'+locOptions(c.loc,false)+'</select>';});
+ return h+'</div></div></div>';
+}
+function labelCodes(sel){
+ var out=[];
+ if(sel==='cajas')state.cajas.forEach(function(c){out.push([c.id,c.t]);});
+ else if(sel==='palets')state.pallets.forEach(function(p){out.push([p.id,'Palet en suelo']);});
+ else FURN.forEach(function(f){if(sel==='*'||sel===f.id)f.subs.forEach(function(s){out.push([f.id+'-'+s.c,f.name+' · '+s.n]);});});
+ return out;
+}
+function printLabels(sel){
+ var base=location.origin+location.pathname,box=document.getElementById('print');
+ box.innerHTML=labelCodes(sel).map(function(l){var q=qrcode(0,'M');q.addData(base+'?u='+encodeURIComponent(l[0]));q.make();return '<div class="lab">'+q.createSvgTag({cellSize:2,margin:0,scalable:true})+'<div><b>'+esc(l[0])+'</b><span>'+esc(l[1])+'</span></div></div>';}).join('');
+ try{window.print();}catch(e){}
+}
+function openCode(code){
+ var r=resolve(code);
+ if(r&&r.furn){ui.view='plano';ui.floor=r.floor;ui.edit=false;ui.sel=r.furn;ui.sub=r.code;ui.sheet='furn';ui.origin=null;render();renderSheet(true);}
+ else{ui.view='articulos';ui.q=code;document.getElementById('q').value=code;render();}
+}
+
+/* ---------- Acceso y estado ---------- */
+function viewLogin(){
+ return '<form class="panel login" id="loginform"><h2>Entrar</h2><p class="empty-msg">Con tu móvil y tu PIN.</p>'+
+  fld('Móvil','<input type="text" id="l-movil" inputmode="tel" autocomplete="tel" required>')+fld('PIN','<input type="password" id="l-pin" inputmode="numeric" autocomplete="current-password" required>')+
+  (ui.msg?'<p class="note">'+esc(ui.msg)+'</p>':'')+'<div><button class="btn pri" type="submit">'+(ui.busy?'Entrando…':'Entrar')+'</button></div></form>';
+}
+function statusInner(){
+ if(DEMO)return '<span class="dot off"></span><span>Modo demostración: los datos se quedan solo en este dispositivo y los artículos de ejemplo son inventados.</span>';
+ var cls=net.off?'off':(pending.length||net.err)?'pend':'',n=pending.length,txt;
+ if(net.off)txt='Sin conexión'+(n?': '+n+' cambio'+(n===1?'':'s')+' guardado'+(n===1?'':'s')+' en el móvil':'');
+ else if(net.err)txt=net.err;
+ else if(n)txt='Guardando '+n+' cambio'+(n===1?'':'s')+'…';
+ else txt=net.busy?'Actualizando…':'Sincronizado';
+ return '<span class="dot '+cls+'"></span><span>'+esc(txt)+'</span><span>·</span><span>'+esc(session.user.nombre)+'</span><button class="link" data-act="refresh">Actualizar</button><button class="link" data-act="logout">'+(ui.del==='logout'?'Hay cambios sin enviar. ¿Salir igualmente?':'Salir')+'</button>';
+}
+function setNet(){var s=document.getElementById('status');if(s&&session)s.innerHTML=statusInner();}
+
+/* ---------- Render ---------- */
+var app=document.getElementById('app'),tabs=document.getElementById('tabs');
+function render(){
+ grabDraft();buildIdx();
+ if(!session){tabs.innerHTML='';document.getElementById('q').hidden=true;app.innerHTML=viewLogin();return;}
+ document.getElementById('q').hidden=false;
+ tabs.innerHTML=[['plano','Plano'],['articulos','Artículos'],['ubicaciones','Ubicaciones']].map(function(t){return '<button data-act="tab" data-v="'+t[0]+'" aria-current="'+(ui.view===t[0])+'">'+t[1]+'</button>';}).join('');
+ app.innerHTML='<div class="status" id="status">'+statusInner()+'</div>'+(ui.view==='plano'?viewPlano():ui.view==='articulos'?viewArticulos():viewUbic());
+ bindPlan();loadFotos();
+}
+function softRender(){
+ var a=document.activeElement,typing=a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.id!=='q';
+ if(typing||drag){setNet();return;}
+ render();if(ui.sheet!=='ai'&&ui.sheet!=='item')renderSheet(false);
+}
+function go(v){ui.view=v;ui.msg='';try{location.hash=v;}catch(e){}render();}
+function loadFotos(){
+ var need=[],ims=document.querySelectorAll('img[data-foto]');
+ for(var i=0;i<ims.length;i++){var id=ims[i].getAttribute('data-foto');if(fotoCache[id]){if(!ims[i].getAttribute('src'))ims[i].src=fotoCache[id];}else if(!fotoWait[id]&&!fotoMiss[id]&&need.indexOf(id)<0)need.push(id);}
+ if(!need.length||DEMO)return;
+ need=need.slice(0,60);need.forEach(function(id){fotoWait[id]=1;});
+ api('fotos',{ids:need}).then(function(j){
+  need.forEach(function(id){delete fotoWait[id];var d=j.fotos&&j.fotos[id];if(d&&String(d).indexOf('data:image/')===0)fotoCache[id]=d;else fotoMiss[id]=1;});
+  var all=document.querySelectorAll('img[data-foto]');for(var k=0;k<all.length;k++){var d2=fotoCache[all[k].getAttribute('data-foto')];if(d2&&!all[k].getAttribute('src'))all[k].src=d2;}
+ }).catch(function(){need.forEach(function(id){delete fotoWait[id];});});
+}
+function shrink(file,max,q,limit){
+ return new Promise(function(res,rej){
+  var u=URL.createObjectURL(file),im=new Image();
+  im.onload=function(){
+   var c=document.createElement('canvas'),d='',size=max;
+   for(var k=0;k<8;k++){
+    var s=Math.min(1,size/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));
+    var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+    d=c.toDataURL('image/jpeg',q);if(!limit||d.length<=limit)break;size*=.8;
+   }
+   URL.revokeObjectURL(u);res(d);
+  };
+  im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('No se ha podido leer esa imagen.'));};
+  im.src=u;
+ });
+}
+function setQty(it,q){
+ var f={qty:q},st=it.st;
+ if(q===0)st='empty';else if(it.min>0&&q<=it.min)st='low';else if(st==='empty'||(st==='low'&&it.min>0))st='ok';
+ if(st!==it.st)f.st=st;
+ mut({t:'itemSet',id:it.id,f:f});
+}
+function autoTags(id,name){
+ if(DEMO)return;
+ api('ai.tags',{name:name}).then(function(j){var it=itemById(id),f={};if(!it)return;if(j.tags&&!it.tags)f.tags=j.tags;if(j.cat&&!it.cat)f.cat=j.cat;if(f.tags||f.cat){mut({t:'itemSet',id:id,f:f});softRender();}}).catch(function(){});
+}
+function val(id){var e=document.getElementById(id);return e?e.value:'';}
+
+/* ---------- Acciones ---------- */
+document.addEventListener('click',function(e){
+ var el=e.target.closest('[data-act]');if(!el)return;
+ var a=el.getAttribute('data-act'),it=el.hasAttribute('data-id')?itemById(el.getAttribute('data-id')):null,keepDel=false,o,pp,fr;
+ if(a==='close'){closeSheet();return;}
+ if(a==='cell'){ui.sub=el.getAttribute('data-code');ui.del=null;renderSheet(false);return;}
+ if(a==='sel'){var rc=el.getBoundingClientRect();openSheet(el.getAttribute('data-id'),rc.left+rc.width/2,rc.top);return;}
+ if(a==='tab'){ui.sheet=null;renderSheet(false);go(el.getAttribute('data-v'));return;}
+ if(a==='refresh'){sync();return;}
+ if(a==='logout'){if(pending.length&&ui.del!=='logout'){ui.del='logout';setNet();return;}logout(false);return;}
+ if(a==='ai'){var rb=el.getBoundingClientRect();ui.ai={modo:'herramientas',busy:false,err:'',items:null,loc:draft().loc||''};ui.sheet='ai';ui.origin=[rb.left+rb.width/2,rb.top];renderSheet(true);return;}
+ if(a==='aimodo'){ui.ai.modo=el.getAttribute('data-m');ui.ai.items=null;ui.ai.err='';renderSheet(false);return;}
+ if(a==='aisave'){
+  var n=0,loc=val('ai-loc');
+  ui.ai.items.forEach(function(x,i){
+   var c=document.getElementById('ai-c-'+i),nm=val('ai-n-'+i).trim(),q=Math.max(0,parseInt(val('ai-q-'+i),10)||0);
+   if(!c||!c.checked||!nm)return;
+   mut({t:'itemAdd',item:{id:newId(),name:nm,qty:q,st:q===0?'empty':'ok',loc:loc,tags:x.tags||'',cat:x.cat||'',min:0,notes:'',price:x.price||'',prov:x.prov||'',date:x.date||'',foto:0}});n++;
+  });
+  ui.sheet=null;renderSheet(false);ui.q='';document.getElementById('q').value='';ui.aiIds=null;ui.filter='all';ui.fcat='';go('articulos');ui.msg=n+' artículo'+(n===1?' guardado':'s guardados')+(loc?' en '+loc:' sin ubicar')+'.';render();return;
+ }
+ if(a==='edititem'&&it){var re=el.getBoundingClientRect();ui.itemId=it.id;ui.sheet='item';ui.origin=[re.left+re.width/2,re.top];ui.msg='';ui.busy='';renderSheet(true);return;}
+ if(a==='saveitem'){
+  it=itemById(ui.itemId);if(!it){closeSheet();return;}
+  var nv={name:val('e-name').trim()||it.name,qty:Math.max(0,parseInt(val('e-qty'),10)||0),min:Math.max(0,parseInt(val('e-min'),10)||0),loc:val('e-loc'),st:val('e-st'),cat:val('e-cat'),tags:val('e-tags').trim(),notes:val('e-notes').trim(),price:val('e-price').trim(),date:val('e-date').trim(),prov:val('e-prov').trim()},f={},any=false;
+  if(nv.qty!==it.qty&&nv.st===it.st){if(nv.qty===0)nv.st='empty';else if(nv.min>0&&nv.qty<=nv.min)nv.st='low';else if(it.st!=='ok'&&(it.st==='empty'||nv.min>0))nv.st='ok';}
+  for(var k in nv)if(nv[k]!==it[k]){f[k]=nv[k];any=true;}
+  if(any)mut({t:'itemSet',id:it.id,f:f});
+  closeSheet();render();return;
+ }
+ if(a==='toggleadd'){ui.addOpen=!ui.addOpen;ui.msg='';render();if(ui.addOpen){var fn=document.getElementById('f-name');if(fn)fn.focus();}return;}
+ if(a==='donde'){
+  grabDraft();var nm2=draft().name.trim();
+  if(!nm2){ui.msg='Escribe primero el nombre del artículo.';render();return;}
+  ui.busy='Preguntando a Gemini dónde encaja mejor…';ui.msg='';render();
+  var locs=[];for(var c2 in idx)locs.push({c:c2,n:idx[c2].name});
+  api('ai.donde',{name:nm2,locs:locs}).then(function(j){ui.busy='';grabDraft();if(j.code&&idx[j.code]){draft().loc=j.code;var sl=document.getElementById('f-loc');if(sl)sl.value=j.code;ui.msg='Sugerencia: '+j.code+' ('+idx[j.code].name+'). '+j.why;}else ui.msg='Gemini no ha encontrado un hueco claro.';render();}).catch(function(er){ui.busy='';ui.msg=er.message;grabDraft();render();});
+  return;
+ }
+ if(a==='aisearch'){
+  ui.busy='buscando';render();
+  api('ai.buscar',{q:ui.q}).then(function(j){ui.busy='';ui.aiIds=j.ids||[];ui.msg=ui.aiIds.length?'':'Gemini tampoco encuentra nada parecido.';if(!ui.aiIds.length)ui.aiIds=null;render();}).catch(function(er){ui.busy='';ui.msg=er.message;render();});
+  return;
+ }
+ if(a==='aiclear'){ui.aiIds=null;render();return;}
+ if(a==='qr'){printLabels(val('qr-sel'));return;}
+ if(a==='ubicdump'){
+  var rows=[];FURN.forEach(function(f){f.subs.forEach(function(s){rows.push([f.id+'-'+s.c,f.zone,f.name,s.n]);});});state.pallets.forEach(function(p){rows.push([p.id,'Foso','Palet en suelo','']);});
+  ui.msg='Guardando…';render();
+  api('ubic',{rows:rows}).then(function(j){ui.msg='Guardadas '+j.n+' ubicaciones en la pestaña Ubicaciones de la hoja.';render();}).catch(function(er){ui.msg=er.message;render();});
+  return;
+ }
+ if(a==='cajaadd'){
+  var pre=val('cj-tipo'),tipo='',mx=0;CAJA_TIPOS.forEach(function(t){if(t[0]===pre)tipo=t[1];});
+  state.cajas.forEach(function(c){var m=/^(.+)-(\d+)$/.exec(c.id);if(m&&m[1]===pre)mx=Math.max(mx,+m[2]);});
+  mut({t:'cajaAdd',id:pre+'-'+pad(mx+1),tipo:tipo});ui.msg='Añadida '+pre+'-'+pad(mx+1)+'. Está al final de la lista.';render();return;
+ }
+ if(a==='floor'){ui.floor=el.getAttribute('data-f');ui.sel=null;ui.sub=null;ui.edit=false;}
+ else if(a==='edit'){ui.edit=!ui.edit;ui.sel=null;}
+ else if(a==='addpal'){var mxp=state.pallets.reduce(function(m,p){return Math.max(m,+p.id.slice(-2)||0);},0)+1;mut({t:'palSet',id:'FOS-P'+pad(mxp),x:5,y:16.5,rot:0});ui.sel='FOS-P'+pad(mxp);}
+ else if(a==='rot'){pp=palById(ui.sel);fr=furnById(ui.sel);
+  if(pp)mut({t:'palSet',id:pp.id,x:pp.x,y:pp.y,rot:pp.rot===0?90:0});
+  else if(fr){o=fpos(fr);var nr=o.rot+90;if(nr>=180)nr-=180;mut({t:'posSet',id:fr.id,x:o.x,y:o.y,rot:nr});}}
+ else if(a==='resetpos'){mut({t:'posDel',id:ui.sel});}
+ else if(a==='delpal'){if(ui.del===ui.sel){mut({t:'palDel',id:ui.sel});ui.sel=null;}else{ui.del=ui.sel;keepDel=true;}}
+ else if(a==='addhere'){grabDraft();draft().loc=el.getAttribute('data-code');ui.addOpen=true;ui.q='';document.getElementById('q').value='';ui.aiIds=null;ui.filter='all';ui.fcat='';ui.sheet=null;renderSheet(false);go('articulos');var f1=document.getElementById('f-name');if(f1)f1.focus();return;}
+ else if(a==='filter'){ui.filter=el.getAttribute('data-f');}
+ else if(it&&a==='inc'){setQty(it,it.qty+1);}
+ else if(it&&a==='dec'){setQty(it,Math.max(0,it.qty-1));}
+ else if(it&&a==='st'){mut({t:'itemSet',id:it.id,f:{st:it.st==='ok'?'low':it.st==='low'?'empty':'ok'}});}
+ else if(it&&a==='move'){ui.moving=ui.moving===it.id?null:it.id;}
+ else if(it&&a==='del'){if(ui.del===it.id){mut({t:'itemDel',id:it.id});ui.sheet=null;}else{ui.del=it.id;keepDel=true;}}
+ else if(it&&a==='goto'){var r=resolve(it.loc);if(r&&r.furn){
+   if(ui.sheet==='furn'&&ui.sel===r.furn){ui.sub=r.code;renderSheet(false);return;}
+   ui.sheet=null;renderSheet(false);ui.floor=r.floor;ui.sel=r.furn;ui.sub=null;ui.edit=false;go('plano');window.scrollTo(0,0);
+   setTimeout(function(){var g=document.querySelector('#plan [data-loc="'+r.furn+'"] .body');if(!g||ui.view!=='plano')return;var b=g.getBoundingClientRect();openSheet(r.furn,b.left+b.width/2,b.top+b.height/2,r.code);},700);
+   return;}}
+ if(!keepDel)ui.del=null;
+ ui.msg='';render();renderSheet(false);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ui.sheet)closeSheet();});
+document.addEventListener('change',function(e){
+ var el=e.target.closest('[data-chg]');if(!el)return;
+ var k=el.getAttribute('data-chg'),file;
+ if(k==='moveto'){var it=itemById(el.getAttribute('data-id'));if(it){mut({t:'itemSet',id:it.id,f:{loc:el.value}});ui.moving=null;}render();renderSheet(false);}
+ else if(k==='cajaloc'){mut({t:'cajaSet',id:el.getAttribute('data-id'),loc:el.value});}
+ else if(k==='fcat'){ui.fcat=el.value;render();}
+ else if(k==='aifile'){
+  file=el.files&&el.files[0];if(!file)return;
+  if(DEMO){ui.ai.err='En el modo demostración no hay conexión con Gemini.';renderSheet(false);return;}
+  ui.ai.busy=true;ui.ai.err='';ui.ai.items=null;renderSheet(false);
+  shrink(file,1600,.82).then(function(d){return api('ai.foto',{modo:ui.ai.modo,img:d});}).then(function(j){if(!ui.ai)return;ui.ai.busy=false;ui.ai.items=j.items||[];if(ui.sheet==='ai')renderSheet(false);}).catch(function(er){if(!ui.ai)return;ui.ai.busy=false;ui.ai.err=er.code?er.message:'No hay conexión. Prueba cuando tengas cobertura.';if(ui.sheet==='ai')renderSheet(false);});
+ }
+ else if(k==='foto'){
+  file=el.files&&el.files[0];var id=ui.itemId;if(!file||!id)return;
+  ui.busy='Guardando la foto…';ui.msg='';renderSheet(false);
+  shrink(file,420,.6,46000).then(function(d){return api('fotoSet',{id:id,data:d}).then(function(){fotoCache[id]=d;delete fotoMiss[id];var x=itemById(id);if(x)x.foto=1;saveLocal();ui.busy='';ui.msg='Foto guardada.';if(ui.sheet==='item'&&ui.itemId===id)renderSheet(false);});})
+  .catch(function(er){ui.busy='';ui.msg=er.code?er.message:'No hay conexión: la foto se sube cuando vuelvas a tener cobertura y lo intentes de nuevo.';if(ui.sheet==='item')renderSheet(false);});
+ }
+});
+document.addEventListener('submit',function(e){
+ e.preventDefault();
+ if(e.target.id==='loginform'){
+  ui.busy='1';ui.msg='';var m=val('l-movil'),p=val('l-pin');render();
+  api('login',{movil:m,pin:p}).then(function(j){session={token:j.token,user:j.user};LS.set('cg_session',session);ui.busy='';state=j.data;if(!state.pos)state.pos={};saveLocal();render();if(startCode){openCode(startCode);startCode='';}})
+  .catch(function(er){ui.busy='';ui.msg=er.code?er.message:'No hay conexión con la hoja. Comprueba la cobertura.';render();});
+  return;
+ }
+ if(e.target.id!=='addform')return;
+ grabDraft();var d=draft(),name=d.name.trim();if(!name)return;
+ var qty=Math.max(0,parseInt(d.qty,10)||0),min=Math.max(0,parseInt(d.min,10)||0),id=newId();
+ mut({t:'itemAdd',item:{id:id,name:name,qty:qty,st:qty===0?'empty':(min>0&&qty<=min?'low':'ok'),loc:d.loc,tags:d.tags.trim(),cat:d.cat,min:min,notes:'',price:'',prov:'',date:'',foto:0}});
+ if(!d.tags.trim()||!d.cat)autoTags(id,name);
+ ui.msg='Guardado: '+name+'.';
+ [['f-name',''],['f-qty','1'],['f-min',''],['f-cat',''],['f-tags','']].forEach(function(x){var el=document.getElementById(x[0]);if(el)el.value=x[1];});
+ render();var f=document.getElementById('f-name');if(f)f.focus();
+});
+document.getElementById('q').addEventListener('input',function(e){
+ ui.q=e.target.value;ui.aiIds=null;ui.sheet=null;renderSheet(false);if(ui.view!=='articulos'){ui.view='articulos';try{location.hash='articulos';}catch(x){}}
+ render();
+});
+window.addEventListener('hashchange',function(){var v=ui.view;readHash();if(v!==ui.view)render();});
+
+/* ---------- Tocar y arrastrar en el plano ---------- */
+var drag=null;
+function bindPlan(){
+ var svg=document.getElementById('plan');if(!svg)return;
+ function pt(e){var p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+ svg.addEventListener('click',function(e){
+  var g=e.target.closest('[data-loc]');if(!g||ui.edit)return;
+  openSheet(g.getAttribute('data-loc'),e.clientX,e.clientY);
+ });
+ svg.addEventListener('pointerdown',function(e){
+  if(!ui.edit)return;
+  var g=e.target.closest('[data-loc]');if(!g)return;
+  var id=g.getAttribute('data-loc'),p=palById(id),isPal=!!p;
+  if(!p){var f=furnById(id);if(!f)return;p=state.pos[id]||(state.pos[id]={x:f.cx,y:f.cy,rot:f.rot});}
+  ui.sel=id;ui.del=null;var m=pt(e);drag={p:p,id:id,pal:isPal,dx:p.x-m.x,dy:p.y-m.y};try{svg.setPointerCapture(e.pointerId);}catch(x){}
+  svg.innerHTML=planSVG();
+ });
+ svg.addEventListener('pointermove',function(e){
+  if(!drag)return;var m=pt(e);
+  drag.p.x=Math.min(9.3,Math.max(.6,Math.round((m.x+drag.dx)*20)/20));
+  drag.p.y=Math.min(18.9,Math.max(.6,Math.round((m.y+drag.dy)*20)/20));
+  svg.innerHTML=planSVG();
+ });
+ var end=function(){if(!drag)return;var d=drag;drag=null;mut({t:d.pal?'palSet':'posSet',id:d.id,x:d.p.x,y:d.p.y,rot:d.p.rot});render();};
+ svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+}
+
+/* ---------- Arranque ---------- */
+var startCode='';
+try{startCode=new URLSearchParams(location.search).get('u')||'';}catch(e){}
+render();
+if(session&&startCode){openCode(startCode);startCode='';}
+if(!DEMO){
+ if(session)sync();
+ window.addEventListener('online',function(){net.off=false;setNet();sync();});
+ window.addEventListener('offline',function(){net.off=true;setNet();});
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)sync();});
+ setInterval(function(){if(!document.hidden)sync();},60000);
+}
+})();
+</script>
+</body>
+</html>
