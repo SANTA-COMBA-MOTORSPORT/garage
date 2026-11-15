@@ -314,7 +314,7 @@ function instalar() {
   secret_();
   var has = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'avisoSemanal'; });
   if (!has) ScriptApp.newTrigger('avisoSemanal').timeBased().onWeekDay(ScriptApp.WeekDay.MONDAY).atHour(8).create();
-  try { SpreadsheetApp.getUi().alert('Instalado. Ahora rellena móvil y PIN en la hoja Usuarios.'); } catch (e) { }
+  ss.toast('Instalado. Ahora rellena móvil y PIN en la hoja Usuarios.', 'Couto Garage', 10);
 }
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Couto Garage').addItem('Instalar o reparar hojas', 'instalar').addItem('Probar Gemini', 'probarGemini').addItem('Enviar aviso ahora', 'avisoSemanal').addToUi();
