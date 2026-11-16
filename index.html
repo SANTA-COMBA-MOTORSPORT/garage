@@ -2979,6 +2979,21 @@ function uploadCrops(jobs,img){
 function okImg(v){return typeof v==='string'&&/^lotes\/[\w.\-\/]+\.(jpg|png|webp)$/.test(v)&&v.indexOf('..')<0;}
 function lotId(lot,i){return 'L-'+lot.id+'-'+(i<10?'00':i<100?'0':'')+i;}
 function getJSON(u){return fetch(u,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('No se ha podido leer '+u);return r.json();});}
+/* La foto de una pieza de lote se deduce de su identificador, así que se ve aunque la hoja no guarde la columna «imagen». */
+var lotImg=LS.get('cg_lotimg',{});
+function imgOf(it){return okImg(it.img)?it.img:(okImg(lotImg[it.id])?lotImg[it.id]:'');}
+function loadLotImgs(){
+ getJSON('lotes/index.json').then(function(list){
+  (Array.isArray(list)?list:[]).forEach(function(l){
+   if(!/^[\w\-]+$/.test(l.id))return;var any=false;for(var i=0;i<l.n;i++)if(itemById(lotId(l,i))){any=true;break;}
+   if(!any)return;
+   getJSON('lotes/'+l.id+'/lote.json').then(function(j){
+    (j.items||[]).forEach(function(x,i){var src='lotes/'+l.id+'/'+x.img;if(okImg(src))lotImg[lotId(l,i)]=src;});
+    LS.set('cg_lotimg',lotImg);softRender();
+   }).catch(function(){});
+  });
+ }).catch(function(){});
+}
 function lotesSheetHTML(anim){
  var L=ui.lot,h=cardOpen('Importar un lote',anim);
  h+='<div class="hd"><h2>'+(L.cur?'Importar lote':'Lotes preparados')+'</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
@@ -3028,7 +3043,7 @@ function itemSheetHTML(anim){
  var v=ui.edraft&&ui.edraft.id===it.id?ui.edraft:{name:it.name,qty:it.qty,min:it.min||'',loc:it.loc,st:it.st,cat:it.cat,tags:it.tags,notes:it.notes,price:it.price,date:it.date,prov:it.prov,veh:it.veh||'',out:it.out||''};
  h+='<div class="hd"><h2>Editar artículo</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
  if(it.foto||src)h+='<img class="foto-big" alt="Foto del artículo" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>';
- else if(okImg(it.img))h+='<img class="foto-big" alt="Foto del artículo" src="'+esc(it.img)+'">';
+ else if(imgOf(it))h+='<img class="foto-big" alt="Foto del artículo" src="'+esc(imgOf(it))+'">';
  h+='<div class="grid2">'+
   fld('Nombre','<input type="text" id="e-name" value="'+esc(v.name)+'">',1)+
   fld('Cantidad','<input type="number" id="e-qty" min="0" inputmode="numeric" value="'+esc(v.qty)+'">')+
@@ -3095,9 +3110,9 @@ var ST={ok:'Hay',low:'Queda poco',empty:'Vacío'};
 function itemHTML(it){
  var r=resolve(it.loc),w,src=fotoCache[it.id]||'';
  if(!it.loc)w='<span>Sin ubicar</span>';
- else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
+ else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span> <span class="link" style="color:var(--accent)">Ver en el plano</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
  else w='<span class="code">'+esc(it.loc)+'</span><span>'+(cajaOf(it.loc)?'caja sin colocar todavía':'ubicación que ya no existe')+'</span>';
- var h='<li class="item '+it.st+'"><div class="it-top">'+(okImg(it.img)?'<img class="thumb fit" alt="" loading="lazy" src="'+esc(it.img)+'">':it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':catTile(it.cat))+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
+ var h='<li class="item '+it.st+'"><div class="it-top">'+(imgOf(it)?'<img class="thumb fit" alt="" loading="lazy" src="'+esc(imgOf(it))+'">':it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':catTile(it.cat))+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
   (it.cat||it.min?'<div class="where"><span>'+esc(it.cat||'')+(it.cat&&it.min?' · ':'')+(it.min?'avisa con '+it.min+' o menos':'')+'</span></div>':'')+
   (it.veh||it.out?'<div class="where">'+(it.veh?'<span class="tagv">'+esc(it.veh)+'</span>':'')+(it.out?'<span class="tago">Fuera: '+esc(it.out)+(it.outd?' · desde '+esc(it.outd):'')+'</span>':'')+'</div>':'')+'</div></div>';
  h+='<div class="row"><span class="qty"><button data-act="dec" data-id="'+esc(it.id)+'" aria-label="Quitar uno">−</button><span>'+it.qty+'</span><button data-act="inc" data-id="'+esc(it.id)+'" aria-label="Añadir uno">+</button></span>';
@@ -3278,8 +3293,9 @@ document.addEventListener('click',function(e){
  if(a==='lotimport'){
   var lc=ui.lot.cur,lloc=val('lot-loc'),ln=0;
   lc.items.forEach(function(x,i){var id=lotId(lc,i),src='lotes/'+lc.id+'/'+x.img,q=Math.max(0,parseInt(x.qty,10)||1);if(itemById(id)||!x.name)return;
+   if(okImg(src))lotImg[id]=src;
    mut({t:'itemAdd',item:{id:id,name:String(x.name),qty:q,st:'ok',loc:lloc,tags:String(x.tags||''),cat:CATS.indexOf(x.cat)>=0?x.cat:'Varios',min:0,notes:String(x.notes||''),price:'',prov:'',date:'',foto:0,veh:String(x.veh||''),out:'',outd:'',img:okImg(src)?src:''}});ln++;});
-  ui.sheet=null;ui.lot=null;renderSheet(false);ui.q='';document.getElementById('q').value='';ui.aiIds=null;ui.filter='all';ui.fcat='';ui.fveh='';go('articulos');toast(ln+' pieza'+(ln===1?' importada':'s importadas')+(lloc?' en '+lloc:' sin ubicar'));return;
+  LS.set('cg_lotimg',lotImg);ui.sheet=null;ui.lot=null;renderSheet(false);ui.q='';document.getElementById('q').value='';ui.aiIds=null;ui.filter='all';ui.fcat='';ui.fveh='';go('articulos');toast(ln+' pieza'+(ln===1?' importada':'s importadas')+(lloc?' en '+lloc:' sin ubicar'));return;
  }
  if(a==='back'&&it){mut({t:'itemSet',id:it.id,f:{out:'',outd:''}});toast('De vuelta en su sitio');render();renderSheet(false);return;}
  if(a==='share'){
@@ -3406,7 +3422,7 @@ document.addEventListener('submit',function(e){
  e.preventDefault();
  if(e.target.id==='loginform'){
   ui.busy='1';ui.msg='';var m=val('l-movil'),p=val('l-pin');render();
-  api('login',{movil:m,pin:p}).then(function(j){session={token:j.token,user:j.user};LS.set('cg_session',session);ui.busy='';state=j.data;if(!state.pos)state.pos={};saveLocal();render();if(startCode){openCode(startCode);startCode='';}})
+  api('login',{movil:m,pin:p}).then(function(j){session={token:j.token,user:j.user};LS.set('cg_session',session);ui.busy='';state=j.data;if(!state.pos)state.pos={};saveLocal();render();loadLotImgs();if(startCode){openCode(startCode);startCode='';}})
   .catch(function(er){ui.busy='';ui.msg=er.code?er.message:'No hay conexión con la hoja. Comprueba la cobertura.';render();});
   return;
  }
@@ -3467,6 +3483,7 @@ function bindPlan(){
 var startCode='';
 try{startCode=new URLSearchParams(location.search).get('u')||'';}catch(e){}
 render();
+if(session)loadLotImgs();
 if(session&&startCode){openCode(startCode);startCode='';}
 if(!DEMO&&'serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}}
 if(!DEMO){
