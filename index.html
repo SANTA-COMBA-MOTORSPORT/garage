@@ -124,6 +124,14 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;g
 .item .where{font-size:13px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:3px}
 .item .where button{border:0;padding:0;background:none}
 .item .where button .code{border-color:var(--accent);color:var(--accent)}
+.wherebox{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px;pointer-events:none}
+.wplan{display:block;width:100%;max-height:50vh;border-radius:12px;background:#151318}
+.wherebox .stage{max-height:38vh}
+.wstep{margin:0;font-size:14px;font-weight:600}
+.wstep b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--accent-ink);margin-right:8px;font-size:13px}
+.pin{fill:none;stroke:var(--accent)}
+@media (prefers-reduced-motion: no-preference){.wherebox{animation:viewin .25s ease-out}.pin{animation:ping 1.2s ease-in-out infinite}}
+@keyframes ping{50%{opacity:.2}}
 .tagv{font-size:12px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--ink)}
 .tago{font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--warn);color:#1a1206}
 .kit{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);text-align:left;width:100%}
@@ -208,7 +216,7 @@ label.f.w{grid-column:1/-1}
 <header>
   <div class="top">
     <h1>Couto <span>Garage</span></h1>
-    <input id="q" type="text" placeholder="Buscar: aceite, M6, camiseta..." autocomplete="off" aria-label="Buscar artículo">
+    <input id="q" type="text" placeholder="Buscar: aceite, M6, camiseta..." autocomplete="off" enterkeyhint="search" aria-label="Buscar artículo">
   </div>
 </header>
 <main id="app"></main>
@@ -2715,7 +2723,7 @@ function logout(expired){
  ui.sheet=null;ui.msg=expired?'La sesión ha caducado. Vuelve a entrar.':'';render();renderSheet(false);
 }
 
-var ui={view:'inicio',zone:'taller',full:false,floor:'main',sel:null,sub:null,edit:false,q:'',filter:'all',fcat:'',fveh:'',lot:null,kitId:null,kitPick:false,kitQuit:false,kq:'',moving:null,del:null,addOpen:false,draft:null,sheet:null,origin:null,itemId:null,ai:null,aiIds:null,msg:'',busy:''};
+var ui={view:'inicio',zone:'taller',full:false,floor:'main',sel:null,sub:null,edit:false,q:'',filter:'all',fcat:'',fveh:'',where:null,lot:null,kitId:null,kitPick:false,kitQuit:false,kq:'',moving:null,del:null,addOpen:false,draft:null,sheet:null,origin:null,itemId:null,ai:null,aiIds:null,msg:'',busy:''};
 var VIEWS=['inicio','plano','articulos','ubicaciones'];
 function setZone(z){z=String(z||'taller').toLowerCase();ui.zone=z;ui.floor=z==='foso'?'sot':z==='sprinter'?'van':'main';}
 function readHash(){var h=(location.hash||'').replace('#','');if(VIEWS.indexOf(h)>=0)ui.view=h;}
@@ -3110,7 +3118,7 @@ var ST={ok:'Hay',low:'Queda poco',empty:'Vacío'};
 function itemHTML(it){
  var r=resolve(it.loc),w,src=fotoCache[it.id]||'';
  if(!it.loc)w='<span>Sin ubicar</span>';
- else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span> <span class="link" style="color:var(--accent)">Ver en el plano</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
+ else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span> <span class="link" style="color:var(--accent)">'+(ui.where===it.id?'Ocultar plano':'Ver en el plano')+'</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
  else w='<span class="code">'+esc(it.loc)+'</span><span>'+(cajaOf(it.loc)?'caja sin colocar todavía':'ubicación que ya no existe')+'</span>';
  var h='<li class="item '+it.st+'"><div class="it-top">'+(imgOf(it)?'<img class="thumb fit" alt="" loading="lazy" src="'+esc(imgOf(it))+'">':it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':catTile(it.cat))+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
   (it.cat||it.min?'<div class="where"><span>'+esc(it.cat||'')+(it.cat&&it.min?' · ':'')+(it.min?'avisa con '+it.min+' o menos':'')+'</span></div>':'')+
@@ -3118,8 +3126,20 @@ function itemHTML(it){
  h+='<div class="row"><span class="qty"><button data-act="dec" data-id="'+esc(it.id)+'" aria-label="Quitar uno">−</button><span>'+it.qty+'</span><button data-act="inc" data-id="'+esc(it.id)+'" aria-label="Añadir uno">+</button></span>';
  h+='<button class="pill '+it.st+'" data-act="st" data-id="'+esc(it.id)+'" title="Cambiar estado">'+ST[it.st]+'</button>';
  h+='<span class="acts">'+(it.out?'<button class="btn sm" data-act="back" data-id="'+esc(it.id)+'">Ha vuelto</button>':'<button class="btn sm" data-act="move" data-id="'+esc(it.id)+'">Mover</button>')+'<button class="btn sm" data-act="edititem" data-id="'+esc(it.id)+'">Editar</button></span></div>';
+ if(ui.where===it.id)h+=whereHTML(it);
  if(ui.moving===it.id)h+='<select data-chg="moveto" data-id="'+esc(it.id)+'" aria-label="Nueva ubicación">'+locOptions(it.loc,true)+'</select>';
  return h+'</li>';
+}
+/* Dónde está, sin salir de la ficha: primero la zona con el mueble señalado, luego el mueble con el hueco señalado. */
+function whereHTML(it){
+ var r=resolve(it.loc);if(!r||!r.furn)return '';
+ var sv=[ui.floor,ui.zone,ui.sel,ui.sub,ui.edit,ui.full];
+ setZone(r.zone);ui.sel=r.furn;ui.sub=r.code;ui.edit=false;ui.full=false;
+ var vb=planVB(),f=furnById(r.furn),p=palById(r.furn),pos=f?fpos(f):p,plan=planSVG(),stage=stageSVG(r.furn);
+ ui.floor=sv[0];ui.zone=sv[1];ui.sel=sv[2];ui.sub=sv[3];ui.edit=sv[4];ui.full=sv[5];
+ var fname=f?f.name:'Palet en suelo '+r.furn.slice(-2),cell=(idx[r.code]&&idx[r.code].name.split(' · ')[1])||'',zn={Taller:'el taller',Living:'el living',Foso:'el foso',Sprinter:'la Sprinter'}[r.zone]||r.zone;
+ return '<div class="wherebox"><p class="wstep"><b>1</b>En '+zn+': '+esc(fname)+'</p><svg class="wplan" style="--k:'+vb[2]+'" viewBox="'+vb.join(' ')+'" aria-hidden="true">'+plan+'<circle class="pin" cx="'+pos.x+'" cy="'+pos.y+'" r="'+(vb[2]*.1)+'" stroke-width="'+(vb[2]*.012)+'"/></svg>'+
+  '<p class="wstep"><b>2</b>'+esc(fname)+(cell?': '+esc(cell):'')+(r.via?' · dentro de '+esc(r.via):'')+'</p>'+stage+'</div>';
 }
 function matches(it){
  if(ui.filter==='buy'&&it.st==='ok')return false;
@@ -3388,11 +3408,10 @@ document.addEventListener('click',function(e){
  else if(it&&a==='st'){mut({t:'itemSet',id:it.id,f:{st:it.st==='ok'?'low':it.st==='low'?'empty':'ok'}});}
  else if(it&&a==='move'){ui.moving=ui.moving===it.id?null:it.id;}
  else if(it&&a==='del'){if(ui.del===it.id){mut({t:'itemDel',id:it.id});ui.sheet=null;}else{ui.del=it.id;keepDel=true;}}
- else if(it&&a==='goto'){var r=resolve(it.loc);if(r&&r.furn){
-   if(ui.sheet==='furn'&&ui.sel===r.furn){ui.sub=r.code;renderSheet(false);return;}
-   ui.sheet=null;renderSheet(false);setZone(r.zone);ui.full=false;ui.sel=r.furn;ui.sub=null;ui.edit=false;go('plano');window.scrollTo(0,0);
-   setTimeout(function(){var g=document.querySelector('#plan [data-loc="'+r.furn+'"] .body');if(!g||ui.view!=='plano')return;var b=g.getBoundingClientRect();openSheet(r.furn,b.left+b.width/2,b.top+b.height/2,r.code);},700);
-   return;}}
+ else if(it&&a==='goto'){
+  if(ui.sheet==='item'){ui.sheet=null;ui.q=it.name;document.getElementById('q').value=it.name;ui.aiIds=null;ui.filter='all';ui.fcat='';ui.fveh='';ui.view='articulos';ui.where=it.id;}
+  else ui.where=ui.where===it.id?null:it.id;
+ }
  if(!keepDel)ui.del=null;
  ui.msg='';render();renderSheet(false);
 });
@@ -3437,6 +3456,7 @@ document.addEventListener('submit',function(e){
 });
 document.addEventListener('input',function(e){if(e.target.id!=='kq')return;ui.kq=e.target.value;var k=kitById(ui.kitId),box=document.getElementById('kpick');if(k&&box)box.innerHTML=kitPickHTML(k);});
 function today(){var d=new Date(),z=function(n){return (n<10?'0':'')+n;};return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());}
+document.getElementById('q').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();e.target.blur();}});
 document.getElementById('q').addEventListener('input',function(e){
  ui.q=e.target.value;ui.aiIds=null;ui.filter='all';ui.fcat='';ui.sheet=null;renderSheet(false);if(ui.view!=='articulos'){ui.view='articulos';try{location.hash='articulos';}catch(x){}}
  render();
