@@ -1,0 +1,223 @@
+{
+ "id": "carro-c3",
+ "name": "Bandeja de destornilladores HBM (cajón 3 del carro)",
+ "loc": "SPR-CAR-C3",
+ "items": [
+  {
+   "name": "Destornillador de estrella 8 x 200 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 8x200",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-8-x-200-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 6 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 6x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-6-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 5 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 5x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-5-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 4 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 4x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-4-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 5 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 5x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-5-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 3 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 3x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-3-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador de estrella 6 x 38 mm corto",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador estrella phillips cruz PH 6x38 corto chato",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de estrella.",
+   "img": "destornillador-de-estrella-6-x-38-mm-corto.jpg"
+  },
+  {
+   "name": "Destornillador plano 6 x 38 mm corto",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 6x38 corto chato",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-6-x-38-mm-corto.jpg"
+  },
+  {
+   "name": "Destornillador plano 3 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 3x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-3-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador plano 5 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 5x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-5-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador plano 4 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 4x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-4-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador plano 5 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 5x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-5-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador plano 6 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 6x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-6-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador plano 8 x 200 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador plano ranura SL 8x200",
+   "notes": "Bandeja HBM. Grupo: Destornilladores planos.",
+   "img": "destornillador-plano-8-x-200-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado plano SL 3 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo plano ranura 3x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-plano-sl-3-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado plano SL 4 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo plano ranura 4x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-plano-sl-4-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado plano SL 5.5 x 125 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo plano ranura 5.5x125",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-plano-sl-5-5-x-125-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado de estrella PH 6 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo estrella phillips cruz 6x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-de-estrella-ph-6-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado de estrella PH 4 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo estrella phillips cruz 4x100",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-de-estrella-ph-4-x-100-mm.jpg"
+  },
+  {
+   "name": "Destornillador aislado de estrella PH 3 x 75 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador aislado electricista VDE rojo estrella phillips cruz 3x75",
+   "notes": "Bandeja HBM. Grupo: Destornilladores aislados.",
+   "img": "destornillador-aislado-de-estrella-ph-3-x-75-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión de estrella 2 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño de estrella 2mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-de-estrella-2-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión de estrella 2.5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño de estrella 2.5mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-de-estrella-2-5-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión de estrella 3 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño de estrella 3mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-de-estrella-3-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión Torx T5",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño Torx T5",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-torx-t5.jpg"
+  },
+  {
+   "name": "Destornillador de precisión plano 2 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño plano 2mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-plano-2-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión plano 2.5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño plano 2.5mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-plano-2-5-mm.jpg"
+  },
+  {
+   "name": "Destornillador de precisión plano 3 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "destornillador precision relojero electronica pequeño plano 3mm",
+   "notes": "Bandeja HBM. Grupo: Destornilladores de precisión.",
+   "img": "destornillador-de-precision-plano-3-mm.jpg"
+  }
+ ]
+}

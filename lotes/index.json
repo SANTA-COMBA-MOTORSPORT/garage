@@ -6,6 +6,12 @@
   "n": 71
  },
  {
+  "id": "carro-c3",
+  "name": "Bandeja de destornilladores HBM (cajón 3 del carro)",
+  "loc": "SPR-CAR-C3",
+  "n": 27
+ },
+ {
   "id": "carro-c2",
   "name": "Bandeja de llaves Allen, limas y puntas HBM (cajón 2 del carro)",
   "loc": "SPR-CAR-C2",
