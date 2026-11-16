@@ -1,0 +1,95 @@
+{
+ "id": "carro-c5",
+ "name": "Bandeja de alicates y martillos HBM (cajón 5 del carro)",
+ "loc": "SPR-CAR-C5",
+ "items": [
+  {
+   "name": "Alicate universal 8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate universal combinado 8 pulgadas 200 mm",
+   "notes": "Bandeja HBM. Grupo: Alicates.",
+   "img": "alicate-universal-8p.jpg"
+  },
+  {
+   "name": "Alicate de corte diagonal 8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate corte diagonal cortaalambres cortacables 8 pulgadas 200 mm",
+   "notes": "Bandeja HBM. Grupo: Alicates.",
+   "img": "alicate-de-corte-diagonal-8p.jpg"
+  },
+  {
+   "name": "Alicate de punta larga 8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate punta larga plana fina 8 pulgadas 200 mm",
+   "notes": "Bandeja HBM. Grupo: Alicates.",
+   "img": "alicate-de-punta-larga-8p.jpg"
+  },
+  {
+   "name": "Alicate pico de loro 10\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate pico de loro bomba de agua ajustable tenaza extensible 10 pulgadas 250 mm",
+   "notes": "Bandeja HBM. Grupo: Alicates.",
+   "img": "alicate-pico-de-loro-10p.jpg"
+  },
+  {
+   "name": "Mordaza de presión 10\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "mordaza grip alicate de presion perro 10 pulgadas 250 mm",
+   "notes": "Bandeja HBM. Grupo: Alicates.",
+   "img": "mordaza-de-presion-10p.jpg"
+  },
+  {
+   "name": "Mazo de montaje de nailon y goma",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "martillo mazo nailon goma plastico montaje cabezas blandas",
+   "notes": "Bandeja HBM. Grupo: Martillos.",
+   "img": "mazo-de-montaje-de-nailon-y-goma.jpg"
+  },
+  {
+   "name": "Martillo de mecánico",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "martillo mecanico ajustador peña bola acero",
+   "notes": "Bandeja HBM. Grupo: Martillos.",
+   "img": "martillo-de-mecanico.jpg"
+  },
+  {
+   "name": "Alicate Seeger interior de punta curva",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate seeger circlip arandela anillo elastico interior punta curva acodado",
+   "notes": "Bandeja HBM. Grupo: Alicates para arandelas Seeger. Rotulado «Bent Nose (in)».",
+   "img": "alicate-seeger-interior-de-punta-curva.jpg"
+  },
+  {
+   "name": "Alicate Seeger interior de punta recta",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate seeger circlip arandela anillo elastico interior punta recta",
+   "notes": "Bandeja HBM. Grupo: Alicates para arandelas Seeger. Rotulado «Straight (in)».",
+   "img": "alicate-seeger-interior-de-punta-recta.jpg"
+  },
+  {
+   "name": "Alicate Seeger exterior de punta curva",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate seeger circlip arandela anillo elastico exterior punta curva acodado",
+   "notes": "Bandeja HBM. Grupo: Alicates para arandelas Seeger. Rotulado «Bent Nose (out)».",
+   "img": "alicate-seeger-exterior-de-punta-curva.jpg"
+  },
+  {
+   "name": "Alicate Seeger exterior de punta recta",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alicate seeger circlip arandela anillo elastico exterior punta recta",
+   "notes": "Bandeja HBM. Grupo: Alicates para arandelas Seeger. Rotulado «Straight (out)».",
+   "img": "alicate-seeger-exterior-de-punta-recta.jpg"
+  }
+ ]
+}

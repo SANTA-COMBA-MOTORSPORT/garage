@@ -22,5 +22,11 @@
   "name": "Llaves combinadas con carraca y llaves sueltas (cajón 4 del carro)",
   "loc": "SPR-CAR-C4",
   "n": 22
+ },
+ {
+  "id": "carro-c5",
+  "name": "Bandeja de alicates y martillos HBM (cajón 5 del carro)",
+  "loc": "SPR-CAR-C5",
+  "n": 11
  }
 ]
