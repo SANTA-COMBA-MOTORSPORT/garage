@@ -1,0 +1,376 @@
+{
+ "id": "carro-c2",
+ "name": "Bandeja de llaves Allen, limas y puntas HBM (cajón 2 del carro)",
+ "loc": "SPR-CAR-C2",
+ "items": [
+  {
+   "name": "Llave Allen con mango en T 6 x 150 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 6mm 6 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-6-x-150-mm.jpg"
+  },
+  {
+   "name": "Llave Allen con mango en T 5 x 150 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 5mm 5 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-5-x-150-mm.jpg"
+  },
+  {
+   "name": "Llave Allen con mango en T 3 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 3mm 3 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-3-x-100-mm.jpg"
+  },
+  {
+   "name": "Llave Allen con mango en T 2.5 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 2.5mm 2.5 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-2-5-x-100-mm.jpg"
+  },
+  {
+   "name": "Llave Allen con mango en T 2 x 100 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 2mm 2 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-2-x-100-mm.jpg"
+  },
+  {
+   "name": "Llave Allen con mango en T 4 x 150 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal llave en T mango 4mm 4 hex",
+   "notes": "Bandeja HBM. Grupo: Llaves Allen con mango en T.",
+   "img": "llave-allen-con-mango-en-t-4-x-150-mm.jpg"
+  },
+  {
+   "name": "Juego plegable de llaves Torx",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "torx plegable navaja juego T25 T30 T40 estrella",
+   "notes": "Bandeja HBM. Grupo: Juegos de llaves. Unas 8 llaves; se leen T25, T30 y T40. La bandeja lo rotula «Hex Key».",
+   "img": "juego-plegable-de-llaves-torx.jpg"
+  },
+  {
+   "name": "Lima redonda",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "lima redonda cola de raton limar metal",
+   "notes": "Bandeja HBM. Grupo: Limas.",
+   "img": "lima-redonda.jpg"
+  },
+  {
+   "name": "Lima plana",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "lima plana limar metal",
+   "notes": "Bandeja HBM. Grupo: Limas.",
+   "img": "lima-plana.jpg"
+  },
+  {
+   "name": "Lima cuadrada",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "lima cuadrada limar metal",
+   "notes": "Bandeja HBM. Grupo: Limas.",
+   "img": "lima-cuadrada.jpg"
+  },
+  {
+   "name": "Lima de media caña",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "lima media caña semicircular limar metal",
+   "notes": "Bandeja HBM. Grupo: Limas.",
+   "img": "lima-de-media-cana.jpg"
+  },
+  {
+   "name": "Lima triangular",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "lima triangular limar metal",
+   "notes": "Bandeja HBM. Grupo: Limas.",
+   "img": "lima-triangular.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 9 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 9mm 9 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-9-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 10 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 10mm 10 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-10-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 11 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 11mm 11 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-11-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 12 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 12mm 12 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-12-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 4 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 4mm 4 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-4-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 5mm 5 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-5-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 6 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 6mm 6 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-6-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 7 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 7mm 7 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-7-mm.jpg"
+  },
+  {
+   "name": "Vaso largo 1/4\" 8 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso largo profundo llave de vaso hexagonal 8mm 8 un cuarto",
+   "notes": "Bandeja HBM. Grupo: Vasos largos 1/4\".",
+   "img": "vaso-largo-1-4p-8-mm.jpg"
+  },
+  {
+   "name": "Punta plana FD 4",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta plana destornillador ranura bit FD4",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-plana-fd-4.jpg"
+  },
+  {
+   "name": "Punta plana FD 5.5",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta plana destornillador ranura bit FD5.5",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-plana-fd-5-5.jpg"
+  },
+  {
+   "name": "Punta plana FD 6.5",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta plana destornillador ranura bit FD6.5",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-plana-fd-6-5.jpg"
+  },
+  {
+   "name": "Punta plana FD 7",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta plana destornillador ranura bit FD7",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-plana-fd-7.jpg"
+  },
+  {
+   "name": "Punta Torx T40",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T40",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t40.jpg"
+  },
+  {
+   "name": "Punta Torx T20",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T20",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t20.jpg"
+  },
+  {
+   "name": "Punta Torx T25",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T25",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t25.jpg"
+  },
+  {
+   "name": "Punta Torx T30",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T30",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t30.jpg"
+  },
+  {
+   "name": "Punta Torx T8",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T8",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t8.jpg"
+  },
+  {
+   "name": "Punta Torx T10",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T10",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t10.jpg"
+  },
+  {
+   "name": "Punta Torx T15",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta torx estrella bit T15",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-torx-t15.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 6",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW6",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-6.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 7",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW7",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-7.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 8",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW8",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-8.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 3",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW3",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-3.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 4",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW4",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-4.jpg"
+  },
+  {
+   "name": "Punta hexagonal HW 5",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta allen hexagonal bit HW5",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-hexagonal-hw-5.jpg"
+  },
+  {
+   "name": "Punta Phillips PH 3",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta phillips estrella cruz bit PH3",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-phillips-ph-3.jpg"
+  },
+  {
+   "name": "Punta Phillips PH 2",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta phillips estrella cruz bit PH2",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-phillips-ph-2.jpg"
+  },
+  {
+   "name": "Punta Phillips PH 1",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta phillips estrella cruz bit PH1",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-phillips-ph-1.jpg"
+  },
+  {
+   "name": "Punta Pozidriv PZ 3",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta pozidriv pozi cruz bit PZ3",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-pozidriv-pz-3.jpg"
+  },
+  {
+   "name": "Punta Pozidriv PZ 2",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta pozidriv pozi cruz bit PZ2",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-pozidriv-pz-2.jpg"
+  },
+  {
+   "name": "Punta Pozidriv PZ 1",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "punta pozidriv pozi cruz bit PZ1",
+   "notes": "Bandeja HBM. Grupo: Puntas.",
+   "img": "punta-pozidriv-pz-1.jpg"
+  },
+  {
+   "name": "Juego de llaves Allen largas con punta de bola",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal largas bola juego 1.5 2 2.5 3 4 5 6 8 10",
+   "notes": "Bandeja HBM. Grupo: Juegos de llaves. 9 llaves: 1,5 · 2 · 2,5 · 3 · 4 · 5 · 6 · 8 · 10 mm.",
+   "img": "juego-de-llaves-allen-largas-con-punta-de-bola.jpg"
+  },
+  {
+   "name": "Juego de llaves Allen largas de colores",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "allen hexagonal largas bola colores juego",
+   "notes": "Bandeja HBM. Grupo: Juegos de llaves. 9 llaves con punta de bola. En la foto está fuera de la bandeja.",
+   "img": "juego-de-llaves-allen-largas-de-colores.jpg"
+  }
+ ],
+ "aviso": "Los vasos largos no llevan rotulado el cuadradillo: he puesto 1/4\" por el tamaño. El juego de colores sale fuera de la bandeja en la foto; quítalo si no va en este cajón."
+}

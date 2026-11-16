@@ -4,5 +4,11 @@
   "name": "Bandeja de vasos HBM (cajón 1 del carro)",
   "loc": "SPR-CAR-C1",
   "n": 71
+ },
+ {
+  "id": "carro-c2",
+  "name": "Bandeja de llaves Allen, limas y puntas HBM (cajón 2 del carro)",
+  "loc": "SPR-CAR-C2",
+  "n": 46
  }
 ]
