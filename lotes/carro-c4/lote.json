@@ -1,0 +1,183 @@
+{
+ "id": "carro-c4",
+ "name": "Llaves combinadas con carraca y llaves sueltas (cajón 4 del carro)",
+ "loc": "SPR-CAR-C4",
+ "items": [
+  {
+   "name": "Llave combinada con carraca 30 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 30mm 30",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-30-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 27 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 27mm 27",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-27-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 24 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 24mm 24",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-24-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 22 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 22mm 22",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-22-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 21 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 21mm 21",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-21-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 19 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 19mm 19",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-19-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 17 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 17mm 17",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-17-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 15 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 15mm 15",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-15-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 14 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 14mm 14",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-14-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 13 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 13mm 13",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-13-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 12 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 12mm 12",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-12-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 11 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 11mm 11",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-11-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 10 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 10mm 10",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-10-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 9 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 9mm 9",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-9-mm.jpg"
+  },
+  {
+   "name": "Llave combinada con carraca 8 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave plana fija combinada carraca estrella 8mm 8",
+   "notes": "Grupo: Llaves combinadas con carraca. Juego HBM ordenado en la bandeja.",
+   "img": "llave-combinada-con-carraca-8-mm.jpg"
+  },
+  {
+   "name": "Llave cortada de 17 para tensor",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave fija plana cortada 17mm 17 tensor cadena",
+   "notes": "Grupo: Llaves sueltas. Cortada a propósito para el tensor de cadena.",
+   "img": "llave-cortada-de-17-para-tensor.jpg"
+  },
+  {
+   "name": "Llave de pulgada 1/4\" para pinza Wilwood",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave pulgada pulgadas 1/4 carraca wilwood pinza freno purgador",
+   "notes": "Grupo: Llaves sueltas. La pequeña. Lleva grabado 1/4.",
+   "img": "llave-de-pulgada-1-4p-para-pinza-wilwood.jpg"
+  },
+  {
+   "name": "Llave combinada 17 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave fija plana estrella combinada 17mm 17 chrom vanadium",
+   "notes": "Grupo: Llaves sueltas.",
+   "img": "llave-combinada-17-mm.jpg"
+  },
+  {
+   "name": "Llave fija de dos bocas 24-26 mm Acesa",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave fija plana dos bocas 24mm 26mm 24 26 acesa",
+   "notes": "Grupo: Llaves sueltas.",
+   "img": "llave-fija-de-dos-bocas-24-26-mm-acesa.jpg"
+  },
+  {
+   "name": "Llave fija de dos bocas 18-19 mm Acesa",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave fija plana dos bocas 18mm 19mm 18 19 acesa",
+   "notes": "Grupo: Llaves sueltas.",
+   "img": "llave-fija-de-dos-bocas-18-19-mm-acesa.jpg"
+  },
+  {
+   "name": "Llave inglesa ajustable 10\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave inglesa ajustable moleta 10 pulgadas 250 mm",
+   "notes": "Grupo: Llaves sueltas.",
+   "img": "llave-inglesa-ajustable-10p.jpg"
+  },
+  {
+   "name": "Llave inglesa ajustable 6\" Acesa",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "llave inglesa ajustable moleta 6 pulgadas 150 mm acesa",
+   "notes": "Grupo: Llaves sueltas.",
+   "img": "llave-inglesa-ajustable-6p-acesa.jpg"
+  }
+ ]
+}

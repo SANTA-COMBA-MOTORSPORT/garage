@@ -16,5 +16,11 @@
   "name": "Bandeja de llaves Allen, limas y puntas HBM (cajón 2 del carro)",
   "loc": "SPR-CAR-C2",
   "n": 46
+ },
+ {
+  "id": "carro-c4",
+  "name": "Llaves combinadas con carraca y llaves sueltas (cajón 4 del carro)",
+  "loc": "SPR-CAR-C4",
+  "n": 22
  }
 ]
