@@ -220,7 +220,8 @@ function geminiModel_(key, refresh) {
   }).map(function (m) { return m.name; });
   if (!names.length) fail_('No hay ningún modelo Gemini Flash disponible para esta clave.', 'ia');
   var pick = names.indexOf('models/gemini-flash-latest') >= 0 ? 'models/gemini-flash-latest' : names.filter(function (n) { return !/lite|preview|exp/.test(n); }).sort().pop() || names.sort().pop();
-  p.setProperty('GEMINI_MODEL_AUTO', pick); return pick;
+  var alt = names.filter(function (n) { return n !== pick && !/preview|exp/.test(n); }).sort().pop() || '';
+  p.setProperty('GEMINI_MODEL_AUTO', pick); p.setProperty('GEMINI_MODEL_ALT', alt); return pick;
 }
 function gemini_(parts) {
   var key = geminiKey_(), body = { contents: [{ role: 'user', parts: parts }], generationConfig: { temperature: 0.2, responseMimeType: 'application/json' } };
@@ -228,8 +229,12 @@ function gemini_(parts) {
     return UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/' + model + ':generateContent?key=' + encodeURIComponent(key),
       { method: 'post', contentType: 'application/json', payload: JSON.stringify(body), muteHttpExceptions: true });
   };
-  var res = call(geminiModel_(key, false));
-  if (res.getResponseCode() === 404) res = call(geminiModel_(key, true));
+  var model = geminiModel_(key, false), res = call(model);
+  if (res.getResponseCode() === 404) { model = geminiModel_(key, true); res = call(model); }
+  // 500 y 503 son saturación pasajera de Google: se reintenta y, si sigue, se prueba con el modelo de reserva.
+  for (var n = 1; n <= 2 && (res.getResponseCode() === 503 || res.getResponseCode() === 500); n++) { Utilities.sleep(2500 * n); res = call(model); }
+  if (res.getResponseCode() === 503 || res.getResponseCode() === 500) { var alt = props_().getProperty('GEMINI_MODEL_ALT'); if (alt && alt !== model) res = call(alt); }
+  if (res.getResponseCode() === 503 || res.getResponseCode() === 500) fail_('Gemini está saturado ahora mismo. No es cosa de la app: vuelve a probar en un minuto.', 'ia');
   if (res.getResponseCode() === 429) fail_('Gemini ha llegado al límite gratuito por ahora. Prueba en un minuto.', 'ia');
   if (res.getResponseCode() !== 200) fail_('Gemini ha devuelto un error (' + res.getResponseCode() + ').', 'ia');
   var j = JSON.parse(res.getContentText()), txt = '';
@@ -239,7 +244,7 @@ function gemini_(parts) {
 }
 function cleanItems_(arr) {
   if (!Array.isArray(arr)) arr = arr && Array.isArray(arr.articulos) ? arr.articulos : [];
-  return arr.slice(0, 60).map(function (x) {
+  return arr.slice(0, 150).map(function (x) {
     return { name: str_(x.nombre).slice(0, 200), qty: Math.max(1, Math.round(num_(x.cantidad)) || 1), tags: str_(x.etiquetas).slice(0, 300),
       cat: CATS.indexOf(str_(x.categoria)) >= 0 ? str_(x.categoria) : 'Varios', price: str_(x.precio), prov: str_(x.proveedor), date: str_(x.fecha), dudoso: x.seguro === false ? 1 : 0,
       box: Array.isArray(x.caja) && x.caja.length === 4 && x.caja.every(function (n) { return isFinite(Number(n)); }) ? x.caja.map(function (n) { return Math.max(0, Math.min(1000, Number(n))); }) : null };
@@ -255,6 +260,7 @@ function aiFoto_(req) {
     : 'Eres un experto en herramientas y material de taller mecánico de competición. Identifica cada herramienta u objeto distinto que se vea en la foto, uno por uno, sin agrupar herramientas diferentes. ' +
       'Nombre concreto en español (por ejemplo "Llave combinada 13 mm", "Alicate de corte diagonal"). Pon la medida o la marca SOLO si se lee claramente en la foto; si no se lee, no la inventes y pon "seguro": false. ' +
       'Si hay varias unidades idénticas, una sola entrada con su cantidad. ' +
+      'La foto puede estar girada o del revés. Si es una bandeja o maletín con el nombre o la medida impresos junto a cada hueco, lee esos rótulos y úsalos para nombrar cada pieza (por ejemplo "Vaso 1/2\" 17 mm", "Alargadera 3/8\" de 6 pulgadas"); en ese caso "seguro": true. Si un hueco rotulado está vacío, no lo incluyas. ' +
       'Añade a cada elemento "caja": [ymin, xmin, ymax, xmax], el recuadro que ocupa en la foto en escala de 0 a 1000 (si hay varias unidades, el de una sola). ' + base;
   return { ok: true, items: cleanItems_(gemini_([{ text: prompt }, { inline_data: { mime_type: m[1], data: m[2] } }])) };
 }
