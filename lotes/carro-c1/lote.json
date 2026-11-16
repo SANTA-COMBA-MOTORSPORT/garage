@@ -1,0 +1,576 @@
+{
+ "id": "carro-c1",
+ "name": "Bandeja de vasos HBM (cajón 1 del carro)",
+ "loc": "SPR-CAR-C1",
+ "aviso": "Los vasos y las alargaderas no llevan rotulado el cuadradillo: está deducido por el tamaño. Revísalo antes de importar.",
+ "items": [
+  {
+   "name": "Vaso 1/2\" 8 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 8mm 8 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-8-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 9 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 9mm 9 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-9-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 10 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 10mm 10 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-10-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 11 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 11mm 11 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-11-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 12 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 12mm 12 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-12-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 13 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 13mm 13 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-13-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 15 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 15mm 15 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-15-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 16 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 16mm 16 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-16-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 17 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 17mm 17 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-17-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 19 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 19mm 19 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-19-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 20 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 20mm 20 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-20-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 21 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 21mm 21 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-21-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 22 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 22mm 22 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-22-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 24 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 24mm 24 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-24-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 27 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 27mm 27 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-27-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 30 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 30mm 30 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-30-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/2\" 32 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 32mm 32 media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/2\".",
+   "img": "vaso-1-2p-32-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 19 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 19mm 19 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-19-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 18 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 18mm 18 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-18-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 17 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 17mm 17 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-17-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 16 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 16mm 16 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-16-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 15 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 15mm 15 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-15-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 14 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 14mm 14 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-14-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 13 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 13mm 13 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-13-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 12 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 12mm 12 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-12-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 11 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 11mm 11 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-11-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 10 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 10mm 10 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-10-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 9 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 9mm 9 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-9-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 8 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 8mm 8 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-8-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 20 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 20mm 20 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-20-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 21 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 21mm 21 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-21-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 22 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 22mm 22 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-22-mm.jpg"
+  },
+  {
+   "name": "Vaso 3/8\" 24 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 24mm 24 tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 3/8\".",
+   "img": "vaso-3-8p-24-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 4 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 4mm 4 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-4-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 4.5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 4.5mm 4.5 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-4-5-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 5mm 5 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-5-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 5.5 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 5.5mm 5.5 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-5-5-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 6 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 6mm 6 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-6-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 7 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 7mm 7 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-7-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 8 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 8mm 8 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-8-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 9 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 9mm 9 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-9-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 10 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 10mm 10 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-10-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 11 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 11mm 11 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-11-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 12 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 12mm 12 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-12-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 13 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 13mm 13 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-13-mm.jpg"
+  },
+  {
+   "name": "Vaso 1/4\" 14 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso llave de vaso hexagonal 14mm 14 un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos 1/4\".",
+   "img": "vaso-1-4p-14-mm.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E10",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E10 e10 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e10.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E11",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E11 e11 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e11.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E12",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E12 e12 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e12.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E14",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E14 e14 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e14.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E16",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E16 e16 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e16.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E18",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E18 e18 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e18.jpg"
+  },
+  {
+   "name": "Vaso Torx hembra E20",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso torx exterior estrella E20 e20 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos Torx hembra.",
+   "img": "vaso-torx-hembra-e20.jpg"
+  },
+  {
+   "name": "Vaso de bujía 21 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso bujias largo 21mm 21 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos de bujía.",
+   "img": "vaso-de-bujia-21-mm.jpg"
+  },
+  {
+   "name": "Vaso de bujía 16 mm",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "vaso bujias largo 16mm 16 HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Vasos de bujía.",
+   "img": "vaso-de-bujia-16-mm.jpg"
+  },
+  {
+   "name": "Carraca 1/4\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "carraca llave de carraca trinquete un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Carracas.",
+   "img": "carraca-1-4p.jpg"
+  },
+  {
+   "name": "Carraca 3/8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "carraca llave de carraca trinquete tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Carracas.",
+   "img": "carraca-3-8p.jpg"
+  },
+  {
+   "name": "Carraca 1/2\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "carraca llave de carraca trinquete media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Carracas.",
+   "img": "carraca-1-2p.jpg"
+  },
+  {
+   "name": "Mango destornillador 1/4\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "mango portavasos destornillador spinner un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Mangos.",
+   "img": "mango-destornillador-1-4p.jpg"
+  },
+  {
+   "name": "Barra deslizante en T 1/4\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "barra deslizante maneral T un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Barras en T.",
+   "img": "barra-deslizante-en-t-1-4p.jpg"
+  },
+  {
+   "name": "Barra deslizante en T 3/8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "barra deslizante maneral T tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Barras en T.",
+   "img": "barra-deslizante-en-t-3-8p.jpg"
+  },
+  {
+   "name": "Barra deslizante en T 1/2\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "barra deslizante maneral T media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Barras en T.",
+   "img": "barra-deslizante-en-t-1-2p.jpg"
+  },
+  {
+   "name": "Articulación cardan 1/2\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "cardan junta universal articulacion media pulgada HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Cardanes.",
+   "img": "articulacion-cardan-1-2p.jpg"
+  },
+  {
+   "name": "Articulación cardan 3/8\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "cardan junta universal articulacion tres octavos HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Cardanes.",
+   "img": "articulacion-cardan-3-8p.jpg"
+  },
+  {
+   "name": "Articulación cardan 1/4\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "cardan junta universal articulacion un cuarto HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Cardanes.",
+   "img": "articulacion-cardan-1-4p.jpg"
+  },
+  {
+   "name": "Alargadera 5\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 5 pulgadas 125 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-5p.jpg"
+  },
+  {
+   "name": "Alargadera 10\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 10 pulgadas 250 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-10p.jpg"
+  },
+  {
+   "name": "Alargadera 6\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 6 pulgadas 150 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-6p.jpg"
+  },
+  {
+   "name": "Alargadera 3\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 3 pulgadas 75 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-3p.jpg"
+  },
+  {
+   "name": "Alargadera 4\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 4 pulgadas 100 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-4p.jpg"
+  },
+  {
+   "name": "Alargadera 2\"",
+   "qty": 1,
+   "cat": "Herramienta manual",
+   "tags": "alargadera extension prolongador 2 pulgadas 50 mm HBM",
+   "notes": "Bandeja de vasos HBM. Grupo: Alargaderas.",
+   "img": "alargadera-2p.jpg"
+  }
+ ]
+}

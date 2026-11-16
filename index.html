@@ -118,6 +118,7 @@ ul.items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;g
 #sheet .item{background:var(--raise)}
 .it-top{display:flex;gap:12px;align-items:flex-start}
 .thumb{width:52px;height:52px;border-radius:12px;object-fit:cover;background:var(--raise);flex:none}
+.thumb.fit{object-fit:contain;background:#0c0b0e}
 .thumb.ph{display:flex;align-items:center;justify-content:center;font:700 19px var(--display);letter-spacing:.03em;color:#fff}
 .item .nm{font-weight:600;font-size:17px;overflow-wrap:anywhere}
 .item .where{font-size:13px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:3px}
@@ -2624,7 +2625,7 @@ function seedDemo(){
  var P=[[5.67,3.28,-24],[6.75,2.75,-24],[7.85,2.2,-24],[1.75,6.3,90],[1.85,7.35,0],[3,6.2,0],[4.3,6.2,0],[5.75,5.15,0],[5.75,6.2,0],[2.35,10.3,90],[2.35,11.6,90],[3.05,13.35,0],[4.4,13.35,0],[6.65,10.1,90],[6.65,11.45,90],[6.65,12.8,90],[9.1,10.3,90],[9.1,11.55,90],[9.1,12.8,90]];
  var cajas=[],i,add=function(pre,n,t,loc){for(i=1;i<=n;i++)cajas.push({id:pre+'-'+pad(i),t:t,loc:loc&&i<=12?loc:''});};
  add('C5',12,'Caja 5 L');add('C11',8,'Caja 11 L');add('ORG',3,'Organizador con tapa');add('GAV',24,'Gaveta de tornillería','TAL-EST1-N2-M3');
- var mk=function(id,name,qty,st,loc,tags,cat,min){return {id:id,name:name,qty:qty,st:st,loc:loc,tags:tags,cat:cat,min:min||0,notes:'',price:'',prov:'',date:'',foto:0,veh:'',out:'',outd:'',ej:1};};
+ var mk=function(id,name,qty,st,loc,tags,cat,min){return {id:id,name:name,qty:qty,st:st,loc:loc,tags:tags,cat:cat,min:min||0,notes:'',price:'',prov:'',date:'',foto:0,veh:'',out:'',outd:'',img:'',ej:1};};
  return {pallets:P.map(function(p,k){return {id:'FOS-P'+pad(k+1),x:p[0],y:p[1],rot:p[2]};}),cajas:cajas,pos:{},kits:[],items:[
   mk('D1','Aceite motor 10W-40, 1 L',3,'ok','TAL-EST1-N3-M1','lubricante aceite','Lubricantes y químicos',2),
   mk('D2','Juego de llaves de vaso 1/2"',1,'ok','TAL-ARM-CAJ-A1','carraca vasos','Herramienta manual'),
@@ -2714,7 +2715,7 @@ function logout(expired){
  ui.sheet=null;ui.msg=expired?'La sesión ha caducado. Vuelve a entrar.':'';render();renderSheet(false);
 }
 
-var ui={view:'inicio',zone:'taller',full:false,floor:'main',sel:null,sub:null,edit:false,q:'',filter:'all',fcat:'',fveh:'',kitId:null,kitPick:false,kitQuit:false,kq:'',moving:null,del:null,addOpen:false,draft:null,sheet:null,origin:null,itemId:null,ai:null,aiIds:null,msg:'',busy:''};
+var ui={view:'inicio',zone:'taller',full:false,floor:'main',sel:null,sub:null,edit:false,q:'',filter:'all',fcat:'',fveh:'',lot:null,kitId:null,kitPick:false,kitQuit:false,kq:'',moving:null,del:null,addOpen:false,draft:null,sheet:null,origin:null,itemId:null,ai:null,aiIds:null,msg:'',busy:''};
 var VIEWS=['inicio','plano','articulos','ubicaciones'];
 function setZone(z){z=String(z||'taller').toLowerCase();ui.zone=z;ui.floor=z==='foso'?'sot':z==='sprinter'?'van':'main';}
 function readHash(){var h=(location.hash||'').replace('#','');if(VIEWS.indexOf(h)>=0)ui.view=h;}
@@ -2911,6 +2912,7 @@ function addSheetHTML(anim){
  var h=cardOpen('Añadir',anim,true);
  h+='<div class="hd"><h2>¿Cómo lo añades?</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div><div class="opts">'+
   '<button class="opt" data-act="ai"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg><strong>Con una foto</strong><span>Gemini reconoce las herramientas o lee el ticket</span></button>'+
+  '<button class="opt" data-act="lotes" style="grid-column:1/-1;flex-direction:row;text-align:left;gap:14px"><svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg><span><strong>Importar un lote</strong><br><span>Listas ya revisadas, con la foto de cada pieza</span></span></button>'+
   '<button class="opt" data-act="addmanual"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><strong>A mano</strong><span>Escribes el nombre y eliges el hueco</span></button></div>';
  return h+'</section>';
 }
@@ -2973,6 +2975,30 @@ function uploadCrops(jobs,img){
  go();
 }
 
+/* ---------- Lotes preparados: lista de piezas con su foto, lista para importar ---------- */
+function okImg(v){return typeof v==='string'&&/^lotes\/[\w.\-\/]+\.(jpg|png|webp)$/.test(v)&&v.indexOf('..')<0;}
+function lotId(lot,i){return 'L-'+lot.id+'-'+(i<10?'00':i<100?'0':'')+i;}
+function getJSON(u){return fetch(u,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('No se ha podido leer '+u);return r.json();});}
+function lotesSheetHTML(anim){
+ var L=ui.lot,h=cardOpen('Importar un lote',anim);
+ h+='<div class="hd"><h2>'+(L.cur?'Importar lote':'Lotes preparados')+'</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
+ if(L.err)h+='<p class="note">'+esc(L.err)+'</p>';
+ if(L.cur){
+  var c=L.cur,nuevos=c.items.filter(function(x,i){return !itemById(lotId(c,i));}).length;
+  h+='<div><strong>'+esc(c.name)+'</strong><p class="empty-msg">'+c.items.length+' piezas, cada una con su foto.'+(nuevos<c.items.length?' '+(c.items.length-nuevos)+' ya están en el inventario.':'')+'</p></div>';
+  if(c.aviso)h+='<p class="note">'+esc(c.aviso)+'</p>';
+  h+=fld('Guardar todas en','<select id="lot-loc">'+locOptions(L.loc,true)+'</select>');
+  h+='<div class="row"><button class="btn pri" data-act="lotimport"'+(nuevos?'':' disabled')+'>'+(nuevos?'Importar '+nuevos+' pieza'+(nuevos===1?'':'s'):'Ya está todo importado')+'</button><button class="btn" data-act="lotback">Volver</button></div>';
+  h+='<div class="lites">'+c.items.map(function(x){var src='lotes/'+c.id+'/'+x.img;return '<div class="lite">'+(okImg(src)?'<img class="thumb fit" alt="" loading="lazy" src="'+esc(src)+'">':'')+'<span class="nm" style="white-space:normal">'+esc(x.name)+'</span><span class="q">'+(x.qty||1)+'</span></div>';}).join('')+'</div>';
+ }else if(!L.list)h+='<p class="empty-msg">Buscando lotes…</p>';
+ else if(!L.list.length)h+='<p class="empty-msg">No hay ningún lote preparado ahora mismo.</p>';
+ else{
+  h+='<p class="empty-msg">Son listas ya revisadas a partir de tus fotos. Elige una, di en qué hueco va y se guarda entera.</p>';
+  L.list.forEach(function(l){var n=0;for(var i=0;i<l.n;i++)if(itemById(lotId(l,i)))n++;h+='<button class="kit" data-act="lotopen" data-k="'+esc(l.id)+'"><span class="ring" style="--p:'+(l.n?Math.round(n*100/l.n):0)+'" data-t="'+l.n+'"></span><span><strong>'+esc(l.name)+'</strong><span>'+(n>=l.n?'Ya importado':n?n+' de '+l.n+' importadas':l.n+' piezas con foto, sin importar')+'</span></span></button>';});
+ }
+ return h+'</section>';
+}
+
 /* ---------- Plano: vista ---------- */
 function locList(code){
  var its=locItems(code),cj=state.cajas.filter(function(c){return c.loc===code;}),h='';
@@ -3002,6 +3028,7 @@ function itemSheetHTML(anim){
  var v=ui.edraft&&ui.edraft.id===it.id?ui.edraft:{name:it.name,qty:it.qty,min:it.min||'',loc:it.loc,st:it.st,cat:it.cat,tags:it.tags,notes:it.notes,price:it.price,date:it.date,prov:it.prov,veh:it.veh||'',out:it.out||''};
  h+='<div class="hd"><h2>Editar artículo</h2><button class="x" data-act="close" aria-label="Cerrar">✕</button></div>';
  if(it.foto||src)h+='<img class="foto-big" alt="Foto del artículo" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>';
+ else if(okImg(it.img))h+='<img class="foto-big" alt="Foto del artículo" src="'+esc(it.img)+'">';
  h+='<div class="grid2">'+
   fld('Nombre','<input type="text" id="e-name" value="'+esc(v.name)+'">',1)+
   fld('Cantidad','<input type="number" id="e-qty" min="0" inputmode="numeric" value="'+esc(v.qty)+'">')+
@@ -3053,6 +3080,7 @@ function renderSheet(anim){
  else if(ui.sheet==='ai'&&ui.ai)html=aiSheetHTML(anim);
  else if(ui.sheet==='add')html=addSheetHTML(anim);
  else if(ui.sheet==='kit')html=kitSheetHTML(anim);
+ else if(ui.sheet==='lotes'&&ui.lot)html=lotesSheetHTML(anim);
  if(!html){ui.sheet=null;sheet.hidden=true;sheet.innerHTML='';return;}
  var old=sheet.querySelector('.card'),st=old&&!anim?old.scrollTop:0;
  sheet.hidden=false;sheet.innerHTML=html;
@@ -3069,7 +3097,7 @@ function itemHTML(it){
  if(!it.loc)w='<span>Sin ubicar</span>';
  else if(r&&r.furn)w='<button data-act="goto" data-id="'+esc(it.id)+'" title="Ver en el plano"><span class="code">'+esc(it.loc)+'</span></button><span>'+(r.via?'en '+esc(r.name)+' ('+r.code+')':esc(r.name))+'</span>';
  else w='<span class="code">'+esc(it.loc)+'</span><span>'+(cajaOf(it.loc)?'caja sin colocar todavía':'ubicación que ya no existe')+'</span>';
- var h='<li class="item '+it.st+'"><div class="it-top">'+(it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':catTile(it.cat))+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
+ var h='<li class="item '+it.st+'"><div class="it-top">'+(okImg(it.img)?'<img class="thumb fit" alt="" loading="lazy" src="'+esc(it.img)+'">':it.foto||src?'<img class="thumb" alt="" data-foto="'+esc(it.id)+'"'+(src?' src="'+esc(src)+'"':'')+'>':catTile(it.cat))+'<div><span class="nm">'+esc(it.name)+'</span>'+(it.ej?'<span class="ej">Ejemplo</span>':'')+'<div class="where">'+w+'</div>'+
   (it.cat||it.min?'<div class="where"><span>'+esc(it.cat||'')+(it.cat&&it.min?' · ':'')+(it.min?'avisa con '+it.min+' o menos':'')+'</span></div>':'')+
   (it.veh||it.out?'<div class="where">'+(it.veh?'<span class="tagv">'+esc(it.veh)+'</span>':'')+(it.out?'<span class="tago">Fuera: '+esc(it.out)+(it.outd?' · desde '+esc(it.outd):'')+'</span>':'')+'</div>':'')+'</div></div>';
  h+='<div class="row"><span class="qty"><button data-act="dec" data-id="'+esc(it.id)+'" aria-label="Quitar uno">−</button><span>'+it.qty+'</span><button data-act="inc" data-id="'+esc(it.id)+'" aria-label="Añadir uno">+</button></span>';
@@ -3242,6 +3270,17 @@ document.addEventListener('click',function(e){
  if(a==='sel'){var rc=el.getBoundingClientRect();openSheet(el.getAttribute('data-id'),rc.left+rc.width/2,rc.top);return;}
  if(a==='tab'){ui.sheet=null;renderSheet(false);go(el.getAttribute('data-v'));return;}
  if(a==='refresh'){sync();return;}
+ if(a==='lotes'){ui.lot={list:null,cur:null,err:'',loc:''};ui.sheet='lotes';renderSheet(true);
+  getJSON('lotes/index.json').then(function(j){if(!ui.lot)return;ui.lot.list=Array.isArray(j)?j:[];if(ui.sheet==='lotes')renderSheet(false);}).catch(function(){if(!ui.lot)return;ui.lot.list=[];if(ui.sheet==='lotes')renderSheet(false);});return;}
+ if(a==='lotopen'){var lk=el.getAttribute('data-k');if(!/^[\w\-]+$/.test(lk))return;ui.lot.err='';
+  getJSON('lotes/'+lk+'/lote.json').then(function(j){if(!ui.lot||!j||!Array.isArray(j.items))return;j.id=lk;ui.lot.cur=j;ui.lot.loc=idx[j.loc]?j.loc:'';if(ui.sheet==='lotes')renderSheet(false);}).catch(function(){if(!ui.lot)return;ui.lot.err='No se ha podido abrir ese lote. Comprueba la conexión.';if(ui.sheet==='lotes')renderSheet(false);});return;}
+ if(a==='lotback'){ui.lot.cur=null;ui.lot.err='';renderSheet(false);return;}
+ if(a==='lotimport'){
+  var lc=ui.lot.cur,lloc=val('lot-loc'),ln=0;
+  lc.items.forEach(function(x,i){var id=lotId(lc,i),src='lotes/'+lc.id+'/'+x.img,q=Math.max(0,parseInt(x.qty,10)||1);if(itemById(id)||!x.name)return;
+   mut({t:'itemAdd',item:{id:id,name:String(x.name),qty:q,st:'ok',loc:lloc,tags:String(x.tags||''),cat:CATS.indexOf(x.cat)>=0?x.cat:'Varios',min:0,notes:String(x.notes||''),price:'',prov:'',date:'',foto:0,veh:String(x.veh||''),out:'',outd:'',img:okImg(src)?src:''}});ln++;});
+  ui.sheet=null;ui.lot=null;renderSheet(false);ui.q='';document.getElementById('q').value='';ui.aiIds=null;ui.filter='all';ui.fcat='';ui.fveh='';go('articulos');toast(ln+' pieza'+(ln===1?' importada':'s importadas')+(lloc?' en '+lloc:' sin ubicar'));return;
+ }
  if(a==='back'&&it){mut({t:'itemSet',id:it.id,f:{out:'',outd:''}});toast('De vuelta en su sitio');render();renderSheet(false);return;}
  if(a==='share'){
   var txt='Lista de la compra del Couto Garage:\n'+state.items.filter(function(i){return i.st!=='ok';}).map(function(i){return '- '+i.name+(i.st==='empty'?' (no queda)':' (quedan '+i.qty+')');}).join('\n');

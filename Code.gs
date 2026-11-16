@@ -6,7 +6,7 @@
  * 4) Implementar > Nueva implementación > Aplicación web (Ejecutar como: yo; Acceso: cualquier usuario).
  */
 var TABS = {
-  Articulos: ['id', 'nombre', 'cantidad', 'estado', 'ubicacion', 'etiquetas', 'categoria', 'minimo', 'notas', 'precio', 'proveedor', 'fecha_compra', 'foto', 'creado', 'modificado', 'por', 'vehiculo', 'fuera', 'fuera_desde'],
+  Articulos: ['id', 'nombre', 'cantidad', 'estado', 'ubicacion', 'etiquetas', 'categoria', 'minimo', 'notas', 'precio', 'proveedor', 'fecha_compra', 'foto', 'creado', 'modificado', 'por', 'vehiculo', 'fuera', 'fuera_desde', 'imagen'],
   Cajas: ['id', 'tipo', 'ubicacion'],
   Palets: ['id', 'x', 'y', 'rot'],
   Posiciones: ['id', 'x', 'y', 'rot'],
@@ -16,7 +16,7 @@ var TABS = {
   Ubicaciones: ['codigo', 'zona', 'mueble', 'hueco'],
   Kits: ['id', 'nombre', 'articulos', 'cargados']
 };
-var ITEM_MAP = { name: 'nombre', qty: 'cantidad', st: 'estado', loc: 'ubicacion', tags: 'etiquetas', cat: 'categoria', min: 'minimo', notes: 'notas', price: 'precio', prov: 'proveedor', date: 'fecha_compra', veh: 'vehiculo', out: 'fuera', outd: 'fuera_desde' };
+var ITEM_MAP = { name: 'nombre', qty: 'cantidad', st: 'estado', loc: 'ubicacion', tags: 'etiquetas', cat: 'categoria', min: 'minimo', notes: 'notas', price: 'precio', prov: 'proveedor', date: 'fecha_compra', veh: 'vehiculo', out: 'fuera', outd: 'fuera_desde', img: 'imagen' };
 var ST_ES = { ok: 'hay', low: 'queda poco', empty: 'vacio' };
 var ST_IN = { 'hay': 'ok', 'queda poco': 'low', 'vacio': 'empty' };
 var CATS = ['Herramienta manual', 'Herramienta eléctrica', 'Tornillería', 'Recambios', 'Consumibles', 'Lubricantes y químicos', 'Electricidad', 'Ropa SC', 'Bebidas y comida', 'Menaje', 'Limpieza', 'Varios'];
@@ -89,7 +89,7 @@ function getData_(T) {
     return { id: str_(r[0]), name: str_(r[c('nombre')]), qty: num_(r[c('cantidad')]), st: ST_IN[String(r[c('estado')]).toLowerCase()] || 'ok', loc: str_(r[c('ubicacion')]),
       tags: str_(r[c('etiquetas')]), cat: str_(r[c('categoria')]), min: num_(r[c('minimo')]), notes: str_(r[c('notas')]), price: str_(r[c('precio')]),
       prov: str_(r[c('proveedor')]), date: str_(r[c('fecha_compra')]), foto: str_(r[c('foto')]) ? 1 : 0,
-      veh: str_(r[c('vehiculo')]), out: str_(r[c('fuera')]), outd: str_(r[c('fuera_desde')]) };
+      veh: str_(r[c('vehiculo')]), out: str_(r[c('fuera')]), outd: str_(r[c('fuera_desde')]), img: str_(r[c('imagen')]) };
   }).filter(function (i) { return i.id; });
   var cajas = T('Cajas').rows.map(function (r) { return { id: str_(r[0]), t: str_(r[1]), loc: str_(r[2]) }; }).filter(function (x) { return x.id; });
   var pallets = T('Palets').rows.map(function (r) { return { id: str_(r[0]), x: num_(r[1]), y: num_(r[2]), rot: num_(r[3]) }; }).filter(function (x) { return x.id; });
@@ -104,6 +104,7 @@ function getData_(T) {
 function itemVal_(k, v) {
   if (k === 'st') return ST_ES[v] || 'hay';
   if (k === 'qty' || k === 'min') return String(Math.max(0, num_(v)));
+  if (k === 'img') return /^lotes\/[\w.\-\/]+\.(jpg|png|webp)$/.test(str_(v)) && str_(v).indexOf('..') < 0 ? str_(v) : '';
   return str_(v).slice(0, 2000);
 }
 function applyOp_(o, T, u) {
@@ -285,7 +286,7 @@ function aiDonde_(req) {
 
 /* ---------- entrada web ---------- */
 function prepararHojas_() {
-  var p = props_(); if (p.getProperty('ESQUEMA') === '2') return;
+  var p = props_(); if (p.getProperty('ESQUEMA') === '3') return;
   var ss = ss_();
   Object.keys(TABS).forEach(function (name) {
     var sh = ss.getSheetByName(name) || ss.insertSheet(name), cols = TABS[name];
@@ -294,7 +295,7 @@ function prepararHojas_() {
     sh.setFrozenRows(1);
     sh.getRange(2, 1, Math.max(1, sh.getMaxRows() - 1), cols.length).setNumberFormat('@');
   });
-  p.setProperty('ESQUEMA', '2');
+  p.setProperty('ESQUEMA', '3');
 }
 function route_(req) {
   prepararHojas_();
