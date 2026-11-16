@@ -3124,7 +3124,7 @@ function grabDraft(){var n=document.getElementById('f-name');if(!n)return;var v=
 function viewArticulos(){
  var d=draft(),list=state.items.filter(matches);
  if(ui.aiIds)list.sort(function(a,b){return ui.aiIds.indexOf(String(a.id))-ui.aiIds.indexOf(String(b.id));});
- var h='<div class="row"><button class="btn pri" data-act="toggleadd">'+(ui.addOpen?'Cerrar alta':'Añadir artículo')+'</button><button class="btn" data-act="ai">Añadir con foto</button></div>';
+ var h='<div class="row"><button class="btn pri" data-act="toggleadd">'+(ui.addOpen?'Cerrar alta':'Añadir artículo')+'</button><button class="btn" data-act="ai">Añadir con foto</button><button class="btn" data-act="lotes">Importar un lote</button></div>';
  if(ui.addOpen){
   h+='<form class="panel" id="addform"><div class="grid2">'+
    fld('Nombre','<input type="text" id="f-name" required placeholder="Ej.: Pastillas de freno delanteras" value="'+esc(d.name)+'">',1)+
